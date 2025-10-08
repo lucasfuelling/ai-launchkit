@@ -1,21 +1,21 @@
 # 🚀 AI LaunchKit
 
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
 
-1. **Server**: Ubuntu 24.04 LTS (64-bit) HETZNER CPX31 (n8n + supabase)
+1. **Server**: HETZNER.com
 
    - Ubuntu 24.04 LTS (64-bit) HETZNER CPX31 (n8n + supabase)
    - Ubuntu 24.04 LTS (64-bit) HETZNER CPX21 (falls kein n8n)
 
-2. **Domain**: A registered domain with wildcard DNS
+2. **Domain**: A registered domain with wildcard DNS (cloudflare)
 
    ```
    A *.yourdomain.com -> YOUR_SERVER_IP
    ```
 
-3. **Access**: SSH access to your server
+3. **Access**: SSH access to your server (WindowsPowershell: ssh root@<server-ip-adresse-hier>)
 
 ### Quick Install
 
@@ -31,7 +31,7 @@ The installer will ask you for:
 1. **Domain name** - Your wildcard domain (e.g., `yourdomain.com`)
 2. **Email address** - For SSL certificates and service logins
 3. **API keys** (optional) - OpenAI, Anthropic, Groq for enhanced AI features
-4. **Community workflows** - Import 300+ n8n templates (optional, 20-30 min)
+4. **Community workflows** - Import 300+ n8n templates (optional, 20-30 min) NEIN
 5. **Worker count** - Number of n8n workers for parallel processing (1-4)
 6. **Service selection** - Choose which tools to install (including Docker-Mailserver and SnappyMail for production email)
 
