@@ -35,12 +35,6 @@ The installer will ask you for:
 5. **Worker count** - Number of n8n workers for parallel processing (1-4)
 6. **Service selection** - Choose which tools to install (including Docker-Mailserver and SnappyMail for production email)
 
-**Mail Configuration:**
-
-- Mailpit is automatically configured to capture all emails for development/testing (always active)
-- Docker-Mailserver can be selected during installation for production email delivery
-- SnappyMail can be selected as webmail client (requires Docker-Mailserver)
-
 **Installation time:** 10-15 minutes (plus optional workflow import)
 
 ### Post-Installation
