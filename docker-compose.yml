@@ -527,7 +527,7 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:${POSTGRES_VERSION:-17}
+    image: postgres:${POSTGRES_VERSION:-18}
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -567,7 +567,7 @@ services:
 
   # Baserow Database Init - Create database
   baserow-init:
-    image: postgres:${POSTGRES_VERSION:-17}
+    image: postgres:${POSTGRES_VERSION:-18}
     container_name: baserow-init
     profiles: ["baserow"]
     depends_on:
@@ -623,7 +623,7 @@ services:
 
   # NocoDB Database Init - Create database
   nocodb-init:
-    image: postgres:${POSTGRES_VERSION:-17}
+    image: postgres:${POSTGRES_VERSION:-18}
     container_name: nocodb-init
     profiles: ["nocodb"]
     depends_on:
@@ -1093,7 +1093,7 @@ services:
 
   # Odoo Database Init - Create user and DB
   odoo-init:
-    image: postgres:${POSTGRES_VERSION:-17}
+    image: postgres:${POSTGRES_VERSION:-18}
     container_name: odoo-init
     profiles: ["odoo"]
     depends_on:
@@ -1399,7 +1399,7 @@ services:
 
   # Vikunja Database Init - Create database
   vikunja-init:
-    image: postgres:${POSTGRES_VERSION:-17}
+    image: postgres:${POSTGRES_VERSION:-18}
     container_name: vikunja-init
     profiles: ["vikunja"]
     depends_on:
@@ -2165,7 +2165,7 @@ services:
 
   # Database Init für Formbricks
   formbricks-init:
-    image: postgres:${POSTGRES_VERSION:-17}
+    image: postgres:${POSTGRES_VERSION:-18}
     container_name: formbricks-init
     profiles: ["formbricks"]
     depends_on:
