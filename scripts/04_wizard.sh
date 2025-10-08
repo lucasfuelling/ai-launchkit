@@ -51,6 +51,8 @@ current_profiles_for_matching=",$CURRENT_PROFILES_VALUE,"
 # Base service definitions (tag, description)
 base_services_data=(
     "n8n" "n8n, n8n-worker, n8n-import (Workflow Automation)"
+    "supabase" "Supabase (Backend as a Service)"
+    "dentist" "Dentist (Kostenvoranschlag-app)"
     "dify" "Dify (AI Application Development Platform with LLMOps)"
     "flowise" "Flowise (AI Agent Builder)"
     "bolt" "bolt.diy (AI Web Development)"
@@ -80,7 +82,6 @@ base_services_data=(
     "snappymail" "SnappyMail (Modern webmail client for Docker-Mailserver)"
     "langfuse" "Langfuse Suite (AI Observability - includes Clickhouse, Minio)"
     "qdrant" "Qdrant (Vector Database)"
-    "supabase" "Supabase (Backend as a Service)"
     "weaviate" "Weaviate (Vector Database with API Key Auth)"
     "lightrag" "LightRAG (Graph-based RAG with entity extraction)"
     "neo4j" "Neo4j (Graph Database)"
@@ -100,7 +101,6 @@ base_services_data=(
     "scriberr" "Scriberr (AI audio transcription with speaker diarization)"
     "ocr" "OCR Bundle (Tesseract + EasyOCR - Extract text from images/PDFs)"
     "libretranslate" "LibreTranslate (Self-hosted translation API - 50+ languages)"
-    "dentist" "Dentist (Kostenvoranschlag-app)"
 )
 
 services=() # This will be the final array for whiptail
@@ -125,7 +125,7 @@ while [ $idx -lt ${#base_services_data[@]} ]; do
     else
         # .env has no COMPOSE_PROFILES or it's empty/just quotes, use hardcoded defaults
         case "$tag" in
-            "n8n"|"flowise"|"monitoring") status="ON" ;;
+            "n8n"|"supabase"|"dentist") status="ON" ;;
             *) status="OFF" ;;
         esac
     fi
