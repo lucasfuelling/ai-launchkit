@@ -15,7 +15,7 @@
    A *.yourdomain.com -> YOUR_SERVER_IP
    ```
 
-3. **Access**: SSH access to your server (WindowsPowershell: ssh root@<server-ip-adresse-hier>)
+3. **Access**: SSH access to your server (WindowsPowershell: ssh root@"server-ip-adresse-hier")
 
 ### Quick Install
 
