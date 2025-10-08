@@ -21,7 +21,7 @@
 
 ```bash
 # Clone and run the installer
-git clone https://github.com/freddy-schuetz/ai-launchkit && cd ai-launchkit && sudo bash ./scripts/install.sh
+git clone https://github.com/lucasfuelling/ai-launchkit && cd ai-launchkit && sudo bash ./scripts/install.sh
 ```
 
 ### Installation Process
