@@ -20,6 +20,11 @@
     reverse_proxy n8n:5678
 }
 
+# dentist
+{$DENTIST_HOSTNAME} {
+    reverse_proxy dentist:80
+}
+
 # Open WebUI
 {$WEBUI_HOSTNAME} {
     reverse_proxy open-webui:8080

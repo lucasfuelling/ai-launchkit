@@ -1,44 +1,74 @@
 # 🚀 AI LaunchKit
 
-<div align="center">
+## 🚀 Installation
 
-**Open-Source AI Development Toolkit**
+### Prerequisites
 
-*Deploy your complete AI stack in minutes, not weeks*
+1. **Server**: Ubuntu 24.04 LTS (64-bit) HETZNER CPX31 (n8n + supabase)
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![GitHub Stars](https://img.shields.io/github/stars/freddy-schuetz/ai-launchkit?style=social)](https://github.com/freddy-schuetz/ai-launchkit)
-[![Based on](https://img.shields.io/badge/Based%20on-n8n--installer-green)](https://github.com/kossakovsky/n8n-installer)
+   - Ubuntu 24.04 LTS (64-bit) HETZNER CPX31 (n8n + supabase)
+   - Ubuntu 24.04 LTS (64-bit) HETZNER CPX21 (falls kein n8n)
 
-[Installation](#-installation) • [Features](#-whats-included) • [Documentation](#-documentation) • [Support](#-support)
+2. **Domain**: A registered domain with wildcard DNS
 
-</div>
+   ```
+   A *.yourdomain.com -> YOUR_SERVER_IP
+   ```
 
----
+3. **Access**: SSH access to your server
 
-## 🎯 What is AI LaunchKit?
-
-AI LaunchKit is a comprehensive, self-hosted AI development environment that deploys **25+ pre-configured tools** with a single command. Build AI applications, automate workflows, generate images, and develop with AI assistance - all running on your own infrastructure.
-
-Originally forked from [n8n-installer](https://github.com/kossakovsky/n8n-installer), AI LaunchKit has evolved into a complete AI development platform, maintained by [Friedemann Schuetz](https://www.linkedin.com/in/friedemann-schuetz).
-
-### 🎬 Quick Demo
+### Quick Install
 
 ```bash
-# One command to rule them all
+# Clone and run the installer
 git clone https://github.com/freddy-schuetz/ai-launchkit && cd ai-launchkit && sudo bash ./scripts/install.sh
 ```
 
-**That's it!** Your AI development stack is ready in ~10-15 minutes.
+### Installation Process
 
-ATTENTION! The AI LaunchKit is currently in development. It is regularly tested and updated. However, use is at your own risk!
+The installer will ask you for:
+
+1. **Domain name** - Your wildcard domain (e.g., `yourdomain.com`)
+2. **Email address** - For SSL certificates and service logins
+3. **API keys** (optional) - OpenAI, Anthropic, Groq for enhanced AI features
+4. **Community workflows** - Import 300+ n8n templates (optional, 20-30 min)
+5. **Worker count** - Number of n8n workers for parallel processing (1-4)
+6. **Service selection** - Choose which tools to install (including Docker-Mailserver and SnappyMail for production email)
+
+**Mail Configuration:**
+
+- Mailpit is automatically configured to capture all emails for development/testing (always active)
+- Docker-Mailserver can be selected during installation for production email delivery
+- SnappyMail can be selected as webmail client (requires Docker-Mailserver)
+
+**Installation time:** 10-15 minutes (plus optional workflow import)
+
+### Post-Installation
+
+Configure AI model API keys:
+
+```bash
+# Edit configuration
+nano .env
+
+# Add your API keys
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+GROQ_API_KEY=gsk_...
+
+# Restart services
+docker compose restart
+```
+
+---
 
 # ✅ PostgreSQL 18 Issue - FIXED
 
-**The PostgreSQL 18 compatibility issue has been resolved.** 
+**The PostgreSQL 18 compatibility issue has been resolved.**
 You can now safely run `update.sh` after following the appropriate steps below.
 
 ## What Happened
+
 PostgreSQL 18 was released on Sept 26, 2025 with breaking changes. The data format is incompatible with PostgreSQL 17. We've now pinned all services to PostgreSQL 17 to prevent automatic major version upgrades.
 
 ## Which Group Are You In?
@@ -46,11 +76,13 @@ PostgreSQL 18 was released on Sept 26, 2025 with breaking changes. The data form
 ### 🆕 Group A: Installed AI LaunchKit AFTER Sept 26, 2025
 
 Check your PostgreSQL version first:
+
 ```bash
 docker exec postgres postgres --version
 ```
 
 If you have PostgreSQL 18.x:
+
 ```bash
 # Pin your version BEFORE updating (important!)
 echo "POSTGRES_VERSION=18" >> .env
@@ -58,6 +90,7 @@ echo "POSTGRES_VERSION=18" >> .env
 # Now you can safely update
 bash scripts/update.sh
 ```
+
 Your data remains on PostgreSQL 18 and everything continues working.
 
 ### 🔄 Group B: Already Experienced Update Issues
@@ -90,12 +123,14 @@ docker exec -i postgres psql -U postgres < backup_emergency.sql
 # 7. Start all services
 docker compose -p localai up -d
 ```
+
 </details>
 
 ### ✅ Group C: Installed BEFORE Sept 26 (PostgreSQL 17 or older)
 
 Simply update to get the fix:
-```bash
+
+````bash
 sudo bash scripts/update.sh
 
 ## Verification
@@ -106,15 +141,17 @@ docker exec postgres postgres --version
 # Should show either:
 # - PostgreSQL 17.x (most users)
 # - PostgreSQL 18.x (if you pinned it)
-```
+````
 
 ## Technical Details
+
 - Default PostgreSQL version is now pinned to 17
 - Users with v18 can keep it by setting `POSTGRES_VERSION=18` in `.env`
 - Major version upgrades will require manual migration
 - See `.env.example` for version configuration options
 
 ---
+
 **Issue resolved:** September 28, 2025
 
 ---
@@ -123,13 +160,14 @@ docker exec postgres postgres --version
 
 ### 📧 Mail System
 
-| Tool | Description | Always Active | Purpose |
-|------|-------------|---------------|----------|
-| **[Mailpit](https://github.com/axllent/mailpit)** | Mail catcher with web UI Access: `mail.yourdomain.com` | ✅ Yes | Development/Testing - captures all emails |
-| **[Docker-Mailserver](https://github.com/docker-mailserver/docker-mailserver)** | Production mail server | ⚡ Optional | Real email delivery for production |
-| **[SnappyMail](https://github.com/the-djmaze/snappymail)** | Modern webmail client Access: `webmail.yourdomain.com` | ⚡ Optional | Web interface for Docker-Mailserver |
+| Tool                                                                            | Description                                            | Always Active | Purpose                                   |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------- | ----------------------------------------- |
+| **[Mailpit](https://github.com/axllent/mailpit)**                               | Mail catcher with web UI Access: `mail.yourdomain.com` | ✅ Yes        | Development/Testing - captures all emails |
+| **[Docker-Mailserver](https://github.com/docker-mailserver/docker-mailserver)** | Production mail server                                 | ⚡ Optional   | Real email delivery for production        |
+| **[SnappyMail](https://github.com/the-djmaze/snappymail)**                      | Modern webmail client Access: `webmail.yourdomain.com` | ⚡ Optional   | Web interface for Docker-Mailserver       |
 
 **Mail Configuration:**
+
 - Mailpit automatically configured for all services (always active)
 - Docker-Mailserver available for production email delivery (optional)
 - SnappyMail provides a modern web interface for email access (optional, requires Docker-Mailserver)
@@ -138,25 +176,26 @@ docker exec postgres postgres --version
 
 ### 🔧 Workflow Automation
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
-| **[n8n](https://github.com/n8n-io/n8n)** | Visual workflow automation platform | API integrations, data pipelines, business automation | `n8n.yourdomain.com` |
-| **300+ Workflows** | Pre-built n8n templates | Email automation, social media, data sync, AI workflows | Imported on install |
+| Tool                                     | Description                         | Use Cases                                               | Access               |
+| ---------------------------------------- | ----------------------------------- | ------------------------------------------------------- | -------------------- |
+| **[n8n](https://github.com/n8n-io/n8n)** | Visual workflow automation platform | API integrations, data pipelines, business automation   | `n8n.yourdomain.com` |
+| **300+ Workflows**                       | Pre-built n8n templates             | Email automation, social media, data sync, AI workflows | Imported on install  |
 
 ### 🎯 User Interfaces
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
-| **[Open WebUI](https://github.com/open-webui/open-webui)** | ChatGPT-like interface for LLMs | AI chat, model switching, conversation management | `webui.yourdomain.com` |
-| **[Postiz](https://github.com/gitroomhq/postiz-app)** | Social media management platform | Content scheduling, analytics, multi-platform posting | `postiz.yourdomain.com` |
+| Tool                                                       | Description                      | Use Cases                                             | Access                  |
+| ---------------------------------------------------------- | -------------------------------- | ----------------------------------------------------- | ----------------------- |
+| **[Open WebUI](https://github.com/open-webui/open-webui)** | ChatGPT-like interface for LLMs  | AI chat, model switching, conversation management     | `webui.yourdomain.com`  |
+| **[Postiz](https://github.com/gitroomhq/postiz-app)**      | Social media management platform | Content scheduling, analytics, multi-platform posting | `postiz.yourdomain.com` |
 
 ### 📹 Video Conferencing
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
+| Tool                                                     | Description                              | Use Cases                                                  | Access                |
+| -------------------------------------------------------- | ---------------------------------------- | ---------------------------------------------------------- | --------------------- |
 | **[Jitsi Meet](https://github.com/jitsi/jitsi-meet)** ⚠️ | Professional video conferencing platform | Client meetings, team calls, webinars, Cal.com integration | `meet.yourdomain.com` |
 
 **⚠️ Jitsi Meet Requirements:**
+
 - **CRITICAL:** Requires UDP Port 10000 for WebRTC audio/video
 - Many VPS providers block UDP traffic by default
 - Without UDP 10000: Only chat works, no audio/video!
@@ -165,178 +204,121 @@ docker exec postgres postgres --version
 
 ### 💼 Business & Productivity
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
-| **[Cal.com](https://github.com/calcom/cal.com)** | Open-source scheduling platform | Meeting bookings, team calendars, payment integrations | `cal.yourdomain.com` |
-| **[Vikunja](https://github.com/go-vikunja/vikunja)** | Modern task management platform | Kanban boards, Gantt charts, team collaboration, CalDAV | `vikunja.yourdomain.com` |
-| **[Leantime](https://github.com/Leantime/leantime)** | Goal-oriented project management suite | ADHD-friendly PM, time tracking, sprints, strategy tools | `leantime.yourdomain.com` |
-| **[Kimai](https://github.com/kimai/kimai)** | Professional time tracking | DSGVO-compliant billing, team timesheets, API, 2FA, invoicing | `time.yourdomain.com` |
-| **[Invoice Ninja](https://github.com/invoiceninja/invoiceninja)** | Professional invoicing & payment platform | Multi-currency invoices, 40+ payment gateways, recurring billing, client portal | `invoices.yourdomain.com` |
-| **[Baserow](https://github.com/bram2w/baserow)** | Airtable Alternative with real-time collaboration | Database management, project tracking, collaborative workflows | `baserow.yourdomain.com` |
-| **[NocoDB](https://github.com/nocodb/nocodb)** | Open-source Airtable alternative with API & webhooks | Smart spreadsheet UI, realtime collaboration, automation | `nocodb.yourdomain.com` |
-| **[Formbricks](https://github.com/formbricks/formbricks)** | Privacy-first survey platform | Customer feedback, NPS surveys, market research, form builder, GDPR-compliant | `forms.yourdomain.com` |
-| **[Metabase](https://github.com/metabase/metabase)** | User-friendly business intelligence platform | No-code dashboards, automated reports, data exploration, team analytics | `analytics.yourdomain.com` |
-| **[Odoo 18](https://github.com/odoo/odoo)** | Open Source ERP/CRM with AI features | Sales automation, inventory, accounting, AI lead scoring | `odoo.yourdomain.com` |
-| **[Twenty CRM](https://github.com/twentyhq/twenty)** | Modern Notion-like CRM | Customer pipelines, GraphQL API, team collaboration, lightweight CRM for startups | `twenty.yourdomain.com` |
-| **[EspoCRM](https://github.com/espocrm/espocrm)** | Full-featured CRM platform | Email campaigns, workflow automation, advanced reporting, role-based access | `espocrm.yourdomain.com` |
-| **[Mautic](https://github.com/mautic/mautic)** | Marketing automation platform | Lead scoring, email campaigns, landing pages, multi-channel marketing, automation workflows | `mautic.yourdomain.com` |
+| Tool                                                              | Description                                          | Use Cases                                                                                   | Access                     |
+| ----------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------------------- |
+| **[Cal.com](https://github.com/calcom/cal.com)**                  | Open-source scheduling platform                      | Meeting bookings, team calendars, payment integrations                                      | `cal.yourdomain.com`       |
+| **[Vikunja](https://github.com/go-vikunja/vikunja)**              | Modern task management platform                      | Kanban boards, Gantt charts, team collaboration, CalDAV                                     | `vikunja.yourdomain.com`   |
+| **[Leantime](https://github.com/Leantime/leantime)**              | Goal-oriented project management suite               | ADHD-friendly PM, time tracking, sprints, strategy tools                                    | `leantime.yourdomain.com`  |
+| **[Kimai](https://github.com/kimai/kimai)**                       | Professional time tracking                           | DSGVO-compliant billing, team timesheets, API, 2FA, invoicing                               | `time.yourdomain.com`      |
+| **[Invoice Ninja](https://github.com/invoiceninja/invoiceninja)** | Professional invoicing & payment platform            | Multi-currency invoices, 40+ payment gateways, recurring billing, client portal             | `invoices.yourdomain.com`  |
+| **[Baserow](https://github.com/bram2w/baserow)**                  | Airtable Alternative with real-time collaboration    | Database management, project tracking, collaborative workflows                              | `baserow.yourdomain.com`   |
+| **[NocoDB](https://github.com/nocodb/nocodb)**                    | Open-source Airtable alternative with API & webhooks | Smart spreadsheet UI, realtime collaboration, automation                                    | `nocodb.yourdomain.com`    |
+| **[Formbricks](https://github.com/formbricks/formbricks)**        | Privacy-first survey platform                        | Customer feedback, NPS surveys, market research, form builder, GDPR-compliant               | `forms.yourdomain.com`     |
+| **[Metabase](https://github.com/metabase/metabase)**              | User-friendly business intelligence platform         | No-code dashboards, automated reports, data exploration, team analytics                     | `analytics.yourdomain.com` |
+| **[Odoo 18](https://github.com/odoo/odoo)**                       | Open Source ERP/CRM with AI features                 | Sales automation, inventory, accounting, AI lead scoring                                    | `odoo.yourdomain.com`      |
+| **[Twenty CRM](https://github.com/twentyhq/twenty)**              | Modern Notion-like CRM                               | Customer pipelines, GraphQL API, team collaboration, lightweight CRM for startups           | `twenty.yourdomain.com`    |
+| **[EspoCRM](https://github.com/espocrm/espocrm)**                 | Full-featured CRM platform                           | Email campaigns, workflow automation, advanced reporting, role-based access                 | `espocrm.yourdomain.com`   |
+| **[Mautic](https://github.com/mautic/mautic)**                    | Marketing automation platform                        | Lead scoring, email campaigns, landing pages, multi-channel marketing, automation workflows | `mautic.yourdomain.com`    |
 
 ### 🎨 AI Content Generation
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
+| Tool                                                     | Description                           | Use Cases                                          | Access                   |
+| -------------------------------------------------------- | ------------------------------------- | -------------------------------------------------- | ------------------------ |
 | **[ComfyUI](https://github.com/comfyanonymous/ComfyUI)** | Node-based Stable Diffusion interface | Image generation, AI art, photo editing, workflows | `comfyui.yourdomain.com` |
 
 ### 💻 AI-Powered Development / Vibe Coding
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
-| **[bolt.diy](https://github.com/stackblitz-labs/bolt.diy)** | Build full-stack apps with prompts | Rapid prototyping, MVP creation, learning to code | `bolt.yourdomain.com` |
-| **[OpenUI](https://github.com/wandb/openui)** 🧪 | AI-powered UI component generation | Design systems, component libraries, mockups | `openui.yourdomain.com` |
+| Tool                                                        | Description                        | Use Cases                                         | Access                  |
+| ----------------------------------------------------------- | ---------------------------------- | ------------------------------------------------- | ----------------------- |
+| **[bolt.diy](https://github.com/stackblitz-labs/bolt.diy)** | Build full-stack apps with prompts | Rapid prototyping, MVP creation, learning to code | `bolt.yourdomain.com`   |
+| **[OpenUI](https://github.com/wandb/openui)** 🧪            | AI-powered UI component generation | Design systems, component libraries, mockups      | `openui.yourdomain.com` |
 
 ### 🤖 AI Agents
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
-| **[Flowise](https://github.com/FlowiseAI/Flowise)** | Visual AI agent builder | Chatbots, customer support, AI workflows | `flowise.yourdomain.com` |
+| Tool                                                       | Description                                                                 | Use Cases                                                                                 | Access                   |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------ |
+| **[Flowise](https://github.com/FlowiseAI/Flowise)**        | Visual AI agent builder                                                     | Chatbots, customer support, AI workflows                                                  | `flowise.yourdomain.com` |
 | **[LiveKit](https://github.com/livekit/livekit)** + Agents | Real-time voice agents with WebRTC (auto-uses Whisper/TTS/Ollama or OpenAI) | AI voice assistants, conversational AI, ChatGPT-like voice bots, requires UDP 50000-50100 | `livekit.yourdomain.com` |
-| **[Dify](https://github.com/langgenius/dify)** | LLMOps platform for AI apps | Production AI apps, model management, prompt engineering | `dify.yourdomain.com` |
-| **[Letta](https://github.com/letta-ai/letta)** | Stateful agent server | Persistent AI assistants, memory management | `letta.yourdomain.com` |
+| **[Dify](https://github.com/langgenius/dify)**             | LLMOps platform for AI apps                                                 | Production AI apps, model management, prompt engineering                                  | `dify.yourdomain.com`    |
+| **[Letta](https://github.com/letta-ai/letta)**             | Stateful agent server                                                       | Persistent AI assistants, memory management                                               | `letta.yourdomain.com`   |
 
 ### 📚 RAG Systems
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
-| **[RAGApp](https://github.com/ragapp/ragapp)** | Build RAG assistants over your data | Knowledge bases, document Q&A, research tools | `ragapp.yourdomain.com` |
-| **[Qdrant](https://github.com/qdrant/qdrant)** | High-performance vector database | Semantic search, recommendations, RAG storage | `qdrant.yourdomain.com` |
-| **[Weaviate](https://github.com/weaviate/weaviate)** | AI-native vector database | Hybrid search, multi-modal data, GraphQL API | `weaviate.yourdomain.com` |
+| Tool                                                 | Description                         | Use Cases                                     | Access                    |
+| ---------------------------------------------------- | ----------------------------------- | --------------------------------------------- | ------------------------- |
+| **[RAGApp](https://github.com/ragapp/ragapp)**       | Build RAG assistants over your data | Knowledge bases, document Q&A, research tools | `ragapp.yourdomain.com`   |
+| **[Qdrant](https://github.com/qdrant/qdrant)**       | High-performance vector database    | Semantic search, recommendations, RAG storage | `qdrant.yourdomain.com`   |
+| **[Weaviate](https://github.com/weaviate/weaviate)** | AI-native vector database           | Hybrid search, multi-modal data, GraphQL API  | `weaviate.yourdomain.com` |
 
 ### 🎙️ Speech, Language & Text Processing
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
-| **[Faster-Whisper](https://github.com/SYSTRAN/faster-whisper)** | OpenAI-compatible Speech-to-Text | Transcription, voice commands, meeting notes | Internal API |
-| **[OpenedAI-Speech](https://github.com/matatonic/openedai-speech)** | OpenAI-compatible Text-to-Speech | Voice assistants, audiobooks, notifications | Internal API |
-| **[TTS Chatterbox](https://github.com/resemble-ai/chatterbox)** | State-of-the-art TTS with emotion control & voice cloning | AI voices with emotional expression, voice synthesis, outperforms ElevenLabs | `chatterbox.yourdomain.com` |
-| **[LibreTranslate](https://github.com/LibreTranslate/LibreTranslate)** | Self-hosted translation API | 50+ languages, document translation, privacy-focused | `translate.yourdomain.com` |
-| **OCR Bundle: [Tesseract](https://github.com/tesseract-ocr/tesseract) & [EasyOCR](https://github.com/JaidedAI/EasyOCR)** | Dual OCR engines: Tesseract (fast) + EasyOCR (quality) | Text extraction from images/PDFs, receipt scanning, document digitization | Internal API |
-| **[Scriberr](https://github.com/rishikanthc/Scriberr)** | AI audio transcription with WhisperX & speaker diarization | Meeting transcripts, podcast processing, call recordings, speaker identification | `scriberr.yourdomain.com` |
+| Tool                                                                                                                     | Description                                                | Use Cases                                                                        | Access                      |
+| ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------- |
+| **[Faster-Whisper](https://github.com/SYSTRAN/faster-whisper)**                                                          | OpenAI-compatible Speech-to-Text                           | Transcription, voice commands, meeting notes                                     | Internal API                |
+| **[OpenedAI-Speech](https://github.com/matatonic/openedai-speech)**                                                      | OpenAI-compatible Text-to-Speech                           | Voice assistants, audiobooks, notifications                                      | Internal API                |
+| **[TTS Chatterbox](https://github.com/resemble-ai/chatterbox)**                                                          | State-of-the-art TTS with emotion control & voice cloning  | AI voices with emotional expression, voice synthesis, outperforms ElevenLabs     | `chatterbox.yourdomain.com` |
+| **[LibreTranslate](https://github.com/LibreTranslate/LibreTranslate)**                                                   | Self-hosted translation API                                | 50+ languages, document translation, privacy-focused                             | `translate.yourdomain.com`  |
+| **OCR Bundle: [Tesseract](https://github.com/tesseract-ocr/tesseract) & [EasyOCR](https://github.com/JaidedAI/EasyOCR)** | Dual OCR engines: Tesseract (fast) + EasyOCR (quality)     | Text extraction from images/PDFs, receipt scanning, document digitization        | Internal API                |
+| **[Scriberr](https://github.com/rishikanthc/Scriberr)**                                                                  | AI audio transcription with WhisperX & speaker diarization | Meeting transcripts, podcast processing, call recordings, speaker identification | `scriberr.yourdomain.com`   |
 
 ### 🔍 Search & Web Data
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
-| **[SearXNG](https://github.com/searxng/searxng)** | Privacy-respecting metasearch engine | Web search for agents, no tracking, multiple sources | `searxng.yourdomain.com` |
+| Tool                                                        | Description                          | Use Cases                                                 | Access                      |
+| ----------------------------------------------------------- | ------------------------------------ | --------------------------------------------------------- | --------------------------- |
+| **[SearXNG](https://github.com/searxng/searxng)**           | Privacy-respecting metasearch engine | Web search for agents, no tracking, multiple sources      | `searxng.yourdomain.com`    |
 | **[Perplexica](https://github.com/ItzCrazyKns/Perplexica)** | Open-source AI-powered search engine | Deep research, academic search, Perplexity AI alternative | `perplexica.yourdomain.com` |
-| **[Crawl4Ai](https://github.com/unclecode/crawl4ai)** | AI-optimized web crawler | Web scraping, data extraction, site monitoring | Internal API |
+| **[Crawl4Ai](https://github.com/unclecode/crawl4ai)**       | AI-optimized web crawler             | Web scraping, data extraction, site monitoring            | Internal API                |
 
 ### 🧠 Knowledge Graphs
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
-| **[Neo4j](https://github.com/neo4j/neo4j)** | Graph database platform | Knowledge graphs, entity relationships, fraud detection, recommendations | `neo4j.yourdomain.com` |
+| Tool                                              | Description                            | Use Cases                                                                 | Access                    |
+| ------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------- | ------------------------- |
+| **[Neo4j](https://github.com/neo4j/neo4j)**       | Graph database platform                | Knowledge graphs, entity relationships, fraud detection, recommendations  | `neo4j.yourdomain.com`    |
 | **[LightRAG](https://github.com/HKUDS/LightRAG)** | Graph-based RAG with entity extraction | Automatic knowledge graph creation, relationship mapping, complex queries | `lightrag.yourdomain.com` |
 
 ### 🎬 Media Processing Suite
 
 Pre-installed in the n8n container for seamless media manipulation:
 
-| Tool | Description | Use Cases |
-|------|-------------|-----------|
-| **[FFmpeg](https://github.com/FFmpeg/FFmpeg)** | Industry-standard multimedia framework | Video conversion, streaming, audio extraction |
-| **[ImageMagick](https://github.com/ImageMagick/ImageMagick)** | Image manipulation toolkit | Format conversion, resizing, effects, thumbnails |
-| **[ExifTool](https://github.com/exiftool/exiftool)** | Metadata management | Read/write EXIF, IPTC, XMP metadata |
-| **[MediaInfo](https://github.com/MediaArea/MediaInfo)** | Technical media analysis | Codec detection, bitrate analysis, format info |
-| **[SoX](https://github.com/chirlu/sox)** | Sound processing toolkit | Audio effects, format conversion, synthesis |
-| **[Ghostscript](https://github.com/ArtifexSoftware/ghostpdl)** | PostScript/PDF processor | PDF manipulation, conversion, rendering |
-| **[Python3](https://github.com/python/cpython)** | With pydub & Pillow libraries | Custom media processing scripts |
+| Tool                                                           | Description                            | Use Cases                                        |
+| -------------------------------------------------------------- | -------------------------------------- | ------------------------------------------------ |
+| **[FFmpeg](https://github.com/FFmpeg/FFmpeg)**                 | Industry-standard multimedia framework | Video conversion, streaming, audio extraction    |
+| **[ImageMagick](https://github.com/ImageMagick/ImageMagick)**  | Image manipulation toolkit             | Format conversion, resizing, effects, thumbnails |
+| **[ExifTool](https://github.com/exiftool/exiftool)**           | Metadata management                    | Read/write EXIF, IPTC, XMP metadata              |
+| **[MediaInfo](https://github.com/MediaArea/MediaInfo)**        | Technical media analysis               | Codec detection, bitrate analysis, format info   |
+| **[SoX](https://github.com/chirlu/sox)**                       | Sound processing toolkit               | Audio effects, format conversion, synthesis      |
+| **[Ghostscript](https://github.com/ArtifexSoftware/ghostpdl)** | PostScript/PDF processor               | PDF manipulation, conversion, rendering          |
+| **[Python3](https://github.com/python/cpython)**               | With pydub & Pillow libraries          | Custom media processing scripts                  |
 
 ### 💾 Data Infrastructure
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
-| **[Supabase](https://github.com/supabase/supabase)** | Open-source Firebase alternative | User auth, realtime data, file storage, vector embeddings | `supabase.yourdomain.com` |
-| **[PostgreSQL](https://github.com/postgres/postgres)** | Relational database | Structured data, transactions, n8n backend | Internal |
-| **[Redis](https://github.com/redis/redis)** | In-memory data store | Caching, queues, session management | Internal |
+| Tool                                                   | Description                      | Use Cases                                                 | Access                    |
+| ------------------------------------------------------ | -------------------------------- | --------------------------------------------------------- | ------------------------- |
+| **[Supabase](https://github.com/supabase/supabase)**   | Open-source Firebase alternative | User auth, realtime data, file storage, vector embeddings | `supabase.yourdomain.com` |
+| **[PostgreSQL](https://github.com/postgres/postgres)** | Relational database              | Structured data, transactions, n8n backend                | Internal                  |
+| **[Redis](https://github.com/redis/redis)**            | In-memory data store             | Caching, queues, session management                       | Internal                  |
 
 ### 📊 System Management
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
-| **[Vaultwarden](https://github.com/dani-garcia/vaultwarden)** | Self-hosted Bitwarden-compatible password manager | Secure credential storage for all AI LaunchKit services, team password sharing | `vault.yourdomain.com` |
-| **[Caddy](https://github.com/caddyserver/caddy)** | Modern web server | Automatic HTTPS, reverse proxy, load balancing | All domains |
-| **[Cloudflare Tunnel](https://github.com/cloudflare/cloudflared)** | Secure tunnel to Cloudflare | Zero-trust access, no exposed ports, DDoS protection | Internal |
-| **Python Runner** | Python execution environment for n8n | Custom scripts, data processing, automation tasks | Internal |
-| **[Grafana](https://github.com/grafana/grafana)** | Metrics visualization platform | Performance dashboards, alerts, analytics | `grafana.yourdomain.com` |
-| **[Prometheus](https://github.com/prometheus/prometheus)** | Time-series monitoring | Metrics collection, alerting rules, scraping | `prometheus.yourdomain.com` |
-| **[Portainer](https://github.com/portainer/portainer)** | Container management UI | Docker admin, logs, resource monitoring | `portainer.yourdomain.com` |
-| **[Kopia](https://github.com/kopia/kopia)** | Enterprise backup solution | End-to-end encryption, deduplication, WebDAV/S3/B2 support | `backup.yourdomain.com` |
-| **[Langfuse](https://github.com/langfuse/langfuse)** | LLM observability platform | AI performance tracking, cost analysis, debugging | `langfuse.yourdomain.com` |
+| Tool                                                               | Description                                       | Use Cases                                                                      | Access                      |
+| ------------------------------------------------------------------ | ------------------------------------------------- | ------------------------------------------------------------------------------ | --------------------------- |
+| **[Vaultwarden](https://github.com/dani-garcia/vaultwarden)**      | Self-hosted Bitwarden-compatible password manager | Secure credential storage for all AI LaunchKit services, team password sharing | `vault.yourdomain.com`      |
+| **[Caddy](https://github.com/caddyserver/caddy)**                  | Modern web server                                 | Automatic HTTPS, reverse proxy, load balancing                                 | All domains                 |
+| **[Cloudflare Tunnel](https://github.com/cloudflare/cloudflared)** | Secure tunnel to Cloudflare                       | Zero-trust access, no exposed ports, DDoS protection                           | Internal                    |
+| **Python Runner**                                                  | Python execution environment for n8n              | Custom scripts, data processing, automation tasks                              | Internal                    |
+| **[Grafana](https://github.com/grafana/grafana)**                  | Metrics visualization platform                    | Performance dashboards, alerts, analytics                                      | `grafana.yourdomain.com`    |
+| **[Prometheus](https://github.com/prometheus/prometheus)**         | Time-series monitoring                            | Metrics collection, alerting rules, scraping                                   | `prometheus.yourdomain.com` |
+| **[Portainer](https://github.com/portainer/portainer)**            | Container management UI                           | Docker admin, logs, resource monitoring                                        | `portainer.yourdomain.com`  |
+| **[Kopia](https://github.com/kopia/kopia)**                        | Enterprise backup solution                        | End-to-end encryption, deduplication, WebDAV/S3/B2 support                     | `backup.yourdomain.com`     |
+| **[Langfuse](https://github.com/langfuse/langfuse)**               | LLM observability platform                        | AI performance tracking, cost analysis, debugging                              | `langfuse.yourdomain.com`   |
 
 ### 🔧 AI Support Tools
 
-| Tool | Description | Use Cases | Access |
-|------|-------------|-----------|--------|
-| **[Ollama](https://github.com/ollama/ollama)** | Local LLM runtime | Run Llama, Mistral, Gemma models locally | `ollama.yourdomain.com` |
-| **[Gotenberg](https://github.com/gotenberg/gotenberg)** | Document conversion API | PDF generation, HTML to PDF, Office conversions | Internal API |
-| **[Stirling-PDF](https://github.com/Stirling-Tools/Stirling-PDF)** | Complete PDF toolkit with 100+ features | Merge, split, OCR, sign, watermark, convert documents | `pdf.yourdomain.com` |
-
----
-
-## 🚀 Installation
-
-### Prerequisites
-
-1. **Server**: Ubuntu 24.04 LTS (64-bit)
-   - Minimum: 4 GB RAM, 2 CPU cores, 30GB disk (n8n + Flowise only)
-   - Recommended: 16+ GB RAM, 8+ CPU cores, 120GB disk (all services)
-
-2. **Domain**: A registered domain with wildcard DNS
-   ```
-   A *.yourdomain.com -> YOUR_SERVER_IP
-   ```
-
-3. **Access**: SSH access to your server
-
-### Quick Install
-
-```bash
-# Clone and run the installer
-git clone https://github.com/freddy-schuetz/ai-launchkit && cd ai-launchkit && sudo bash ./scripts/install.sh
-```
-
-### Installation Process
-
-The installer will ask you for:
-1. **Domain name** - Your wildcard domain (e.g., `yourdomain.com`)
-2. **Email address** - For SSL certificates and service logins
-3. **API keys** (optional) - OpenAI, Anthropic, Groq for enhanced AI features
-4. **Community workflows** - Import 300+ n8n templates (optional, 20-30 min)
-5. **Worker count** - Number of n8n workers for parallel processing (1-4)
-6. **Service selection** - Choose which tools to install (including Docker-Mailserver and SnappyMail for production email)
-
-**Mail Configuration:** 
-- Mailpit is automatically configured to capture all emails for development/testing (always active)
-- Docker-Mailserver can be selected during installation for production email delivery
-- SnappyMail can be selected as webmail client (requires Docker-Mailserver)
-
-**Installation time:** 10-15 minutes (plus optional workflow import)
-
-### Post-Installation
-
-Configure AI model API keys:
-```bash
-# Edit configuration
-nano .env
-
-# Add your API keys
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
-GROQ_API_KEY=gsk_...
-
-# Restart services
-docker compose restart
-```
+| Tool                                                               | Description                             | Use Cases                                             | Access                  |
+| ------------------------------------------------------------------ | --------------------------------------- | ----------------------------------------------------- | ----------------------- |
+| **[Ollama](https://github.com/ollama/ollama)**                     | Local LLM runtime                       | Run Llama, Mistral, Gemma models locally              | `ollama.yourdomain.com` |
+| **[Gotenberg](https://github.com/gotenberg/gotenberg)**            | Document conversion API                 | PDF generation, HTML to PDF, Office conversions       | Internal API            |
+| **[Stirling-PDF](https://github.com/Stirling-Tools/Stirling-PDF)** | Complete PDF toolkit with 100+ features | Merge, split, OCR, sign, watermark, convert documents | `pdf.yourdomain.com`    |
 
 ---
 
@@ -348,11 +330,11 @@ Vaultwarden is a lightweight, self-hosted password manager that's 100% compatibl
 
 With 40+ services generating unique passwords and API keys, credential management becomes critical. Vaultwarden provides:
 
-* **Central Credential Storage:** All AI LaunchKit passwords in one secure place
-* **Browser Integration:** Auto-fill passwords for all your services
-* **Team Sharing:** Securely share credentials with team members
-* **Mobile Access:** iOS/Android apps for passwords on the go
-* **No Basic Auth:** Unlike other services, Vaultwarden has its own user management
+- **Central Credential Storage:** All AI LaunchKit passwords in one secure place
+- **Browser Integration:** Auto-fill passwords for all your services
+- **Team Sharing:** Securely share credentials with team members
+- **Mobile Access:** iOS/Android apps for passwords on the go
+- **No Basic Auth:** Unlike other services, Vaultwarden has its own user management
 
 ### Initial Setup
 
@@ -374,12 +356,14 @@ sudo bash ./scripts/download_credentials.sh
 ```
 
 This script will:
+
 1. Generate a JSON file with all service passwords, API keys, and tokens
 2. Open port 8889 temporarily (60 seconds)
 3. Display a download link for your browser
 4. Automatically delete the file after download for security
 
 **Import into Vaultwarden:**
+
 1. Download the file using the link provided
 2. Open Vaultwarden: `https://vault.yourdomain.com`
 3. Go to **Tools** → **Import Data**
@@ -391,30 +375,34 @@ All credentials will be organized in an "AI LaunchKit Services" folder.
 
 ### Security Notes
 
-* The admin token is displayed in the final installation report for convenience
-* Credential export files are automatically deleted after download
-* Signups are disabled by default - enable in admin panel if needed
-* Configure 2FA for additional security
+- The admin token is displayed in the final installation report for convenience
+- Credential export files are automatically deleted after download
+- Signups are disabled by default - enable in admin panel if needed
+- Configure 2FA for additional security
 
 ### Client Configuration
 
 **Browser Extensions:**
+
 - Install official Bitwarden extension
 - Set server URL: `https://vault.yourdomain.com`
 - Login with your created account
 
 **Mobile Apps:**
+
 - Download Bitwarden from App Store/Play Store
 - Tap "Self-hosted" during setup
 - Enter: `https://vault.yourdomain.com`
 
 **Desktop Apps:**
+
 - Download from bitwarden.com
 - Settings → Server URL → `https://vault.yourdomain.com`
 
 ### Organizing AI LaunchKit Credentials
 
 **Recommended Organization:**
+
 ```
 📁 AI LaunchKit
 ├── 📁 Core Services
@@ -439,11 +427,13 @@ All credentials will be organized in an "AI LaunchKit Services" folder.
 ### Security Features
 
 **No Basic Auth Required:**
+
 - Vaultwarden is a complete authentication system
 - Users manage their own strong master passwords
 - No interference with browser extensions or mobile apps
 
 **Advanced Security:**
+
 - **2FA Support:** TOTP, WebAuthn, YubiKey, Email
 - **Password Generator:** Create strong unique passwords
 - **Security Reports:** Identify weak or reused passwords
@@ -454,12 +444,14 @@ All credentials will be organized in an "AI LaunchKit Services" folder.
 
 **Auto-Import AI LaunchKit Credentials:**
 After installation, a JSON file with all credentials can be generated:
+
 ```bash
 # Future feature: Auto-export to Vaultwarden format
 cat ai-launchkit-credentials.json
 ```
 
 **Password Best Practices:**
+
 1. Use Vaultwarden's generator for all new services
 2. Enable 2FA on Vaultwarden itself
 3. Create organization for team credential sharing
@@ -468,6 +460,7 @@ cat ai-launchkit-credentials.json
 ### Backup & Recovery
 
 **Backup Vaultwarden Data:**
+
 ```bash
 # Create backup
 docker exec vaultwarden tar -czf /data/shared/vaultwarden-backup-$(date +%Y%m%d).tar.gz /data
@@ -477,6 +470,7 @@ ls -lh ./shared/vaultwarden-backup-*.tar.gz
 ```
 
 **Restore from Backup:**
+
 ```bash
 # Stop service
 docker stop vaultwarden
@@ -505,6 +499,7 @@ Kopia provides fast, secure, and encrypted backups with deduplication and compre
 ### Why Kopia for AI LaunchKit?
 
 With critical data across 40+ services, automated backups become essential. Kopia provides:
+
 - **End-to-End Encryption:** All backups encrypted before leaving the server
 - **Deduplication:** Saves 60-90% storage through intelligent deduplication
 - **Compression:** Further reduces backup size
@@ -515,6 +510,7 @@ With critical data across 40+ services, automated backups become essential. Kopi
 ### Initial Setup
 
 **First Login to Kopia:**
+
 1. Navigate to `https://backup.yourdomain.com`
 2. Login with credentials from `.env` file:
    - Username: `admin`
@@ -525,15 +521,17 @@ With critical data across 40+ services, automated backups become essential. Kopi
 1. **Click "Create Repository"**
 2. **Select WebDAV** as storage type
 3. **Configure WebDAV connection:**
-Server URL: https://nextcloud.example.com/remote.php/dav/files/USERNAME/kopia-backup
-Username: your-nextcloud-username
-Password: your-nextcloud-app-password (NOT your regular password!)
+   Server URL: https://nextcloud.example.com/remote.php/dav/files/USERNAME/kopia-backup
+   Username: your-nextcloud-username
+   Password: your-nextcloud-app-password (NOT your regular password!)
 4. **Set Repository Password:**
+
 - **IMPORTANT:** This MUST be different from your WebDAV password!
 - This password encrypts your backups
 - Store it securely - you'll need it to restore
 
 **Generate Nextcloud App Password:**
+
 1. In Nextcloud: Settings → Security → App passwords
 2. Create new app password named "Kopia Backup"
 3. Use this password for WebDAV connection (step 3 above)
@@ -541,8 +539,10 @@ Password: your-nextcloud-app-password (NOT your regular password!)
 ### Automated Backup Strategy
 
 **Configure Backup Policies:**
+
 1. In Kopia UI, go to Policies
 2. Set retention (recommended):
+
 - Keep hourly: 24
 - Keep daily: 7
 - Keep weekly: 4
@@ -550,6 +550,7 @@ Password: your-nextcloud-app-password (NOT your regular password!)
 - Keep yearly: 3
 
 **What Gets Backed Up:**
+
 - `/data/shared` - All shared files between services
 - n8n workflows and credentials (via PostgreSQL dumps)
 - Service configurations
@@ -559,7 +560,7 @@ Password: your-nextcloud-app-password (NOT your regular password!)
 
 #### Example: Daily Backup Workflow
 
-```javascript
+````javascript
 // 1. Schedule Trigger: Daily at 2 AM
 
 // 2. Execute Command Node: Create database dump
@@ -695,16 +696,18 @@ nc -u YOUR_VPS_IP 10000
 # Type text and press Enter - should appear in Terminal 1
 
 # 3. If text doesn't appear, UDP is blocked by your provider
-```
+````
 
 ### VPS Provider Compatibility
 
 **Known to work well:**
+
 - Hetzner Cloud (WebRTC-friendly)
 - DigitalOcean (good WebRTC performance)
 - Contabo (game server support = UDP OK)
 
 **Often problematic:**
+
 - OVH (frequently blocks UDP)
 - Scaleway (firewall restrictions)
 - AWS/GCP (requires NAT configuration)
@@ -723,6 +726,7 @@ nc -u YOUR_VPS_IP 10000
 ### Initial Setup
 
 **After installation:**
+
 1. Test with a simple meeting: `https://meet.yourdomain.com/test123`
 2. Verify audio/video works from different networks
 3. Configure Cal.com integration (see below)
@@ -732,12 +736,14 @@ nc -u YOUR_VPS_IP 10000
 Jitsi integrates seamlessly with Cal.com for automated video conferencing:
 
 1. **In Cal.com:**
+
    - Go to Settings → Apps → Jitsi Video
    - Click "Install App"
    - Server URL: `https://meet.yourdomain.com`
    - Save configuration
 
 2. **Configure Event Types:**
+
    - Edit any event type
    - Under "Location", select "Jitsi Video"
    - Meeting links are auto-generated for bookings
@@ -749,6 +755,7 @@ Jitsi integrates seamlessly with Cal.com for automated video conferencing:
 ### n8n Integration Examples
 
 #### Automated Meeting Reminders
+
 ```javascript
 // 1. Cal.com Trigger: booking.created
 // 2. Wait Node: 1 hour before meeting
@@ -764,6 +771,7 @@ Message: Client meeting in 1 hour: {{ $json.conferenceUrl }}
 ```
 
 #### Meeting Recording Workflow
+
 ```javascript
 // 1. Schedule Trigger: Daily at 6 PM
 // 2. HTTP Request: Check for completed meetings
@@ -776,12 +784,14 @@ Message: Client meeting in 1 hour: {{ $json.conferenceUrl }}
 ### Security Considerations
 
 **Why No Basic Auth for Jitsi:**
+
 - Meeting participants need direct access to URLs
 - Cal.com integration requires open access
 - Mobile apps expect direct connection
 - Security is handled at room level, not site level
 
 **Room-Level Security Options:**
+
 - **Lobby Mode:** Approve participants before entry
 - **Meeting Passwords:** Add password to sensitive meetings
 - **Unique URLs:** Use hard-to-guess room names
@@ -790,6 +800,7 @@ Message: Client meeting in 1 hour: {{ $json.conferenceUrl }}
 ### Troubleshooting Jitsi
 
 **No Audio/Video:**
+
 ```bash
 # Check if JVB is running
 docker ps | grep jitsi-jvb
@@ -805,6 +816,7 @@ nc -u YOUR_VPS_IP 10000
 ```
 
 **Connection Issues:**
+
 ```bash
 # Check all Jitsi components
 docker ps | grep jitsi
@@ -818,6 +830,7 @@ docker logs caddy | grep jitsi
 
 **Alternative Solutions:**
 If UDP is blocked by your provider:
+
 1. Use external services (Zoom, Google Meet) with Cal.com
 2. Set up a TURN server (complex, additional cost)
 3. Use a different VPS provider with UDP support
@@ -840,6 +853,7 @@ LiveKit provides professional WebRTC infrastructure for AI voice agents, real-ti
 ### ⚠️ CRITICAL Requirements
 
 **UDP Ports 50000-50100 are MANDATORY for audio/video:**
+
 - Without UDP: Only signaling works, NO media streaming!
 - Many VPS providers block UDP traffic by default
 - TCP Port 7882 required as fallback
@@ -866,25 +880,27 @@ nc -u YOUR_VPS_IP 50000
 ### VPS Provider Compatibility
 
 **Known to work well:**
+
 - Hetzner Cloud (WebRTC-friendly, recommended)
 - DigitalOcean (good UDP performance)
 - Contabo (game server support = UDP OK)
 
 **Often problematic:**
+
 - OVH (frequently blocks UDP)
 - Scaleway (firewall restrictions)
 - AWS/GCP (requires NAT configuration)
 
 ### Key Differences vs Jitsi
 
-| Feature | LiveKit | Jitsi Meet |
-|---------|---------|------------|
-| **Primary Use** | AI voice agents, SDKs | Video conferencing |
-| **Authentication** | JWT tokens (backend) | No auth required |
-| **Web UI** | None (API only) | Full meeting interface |
-| **Integration** | SDK-first | Browser-first |
-| **UDP Ports** | 50000-50100 | 10000 |
-| **Best For** | Developers, AI agents | End users, meetings |
+| Feature            | LiveKit               | Jitsi Meet             |
+| ------------------ | --------------------- | ---------------------- |
+| **Primary Use**    | AI voice agents, SDKs | Video conferencing     |
+| **Authentication** | JWT tokens (backend)  | No auth required       |
+| **Web UI**         | None (API only)       | Full meeting interface |
+| **Integration**    | SDK-first             | Browser-first          |
+| **UDP Ports**      | 50000-50100           | 10000                  |
+| **Best For**       | Developers, AI agents | End users, meetings    |
 
 ### Features
 
@@ -918,6 +934,7 @@ nc -u YOUR_VPS_IP 50000
 ### Initial Setup
 
 **After installation, you need:**
+
 1. API Key: `${LIVEKIT_API_KEY}` (from .env)
 2. API Secret: `${LIVEKIT_API_SECRET}` (from .env)
 3. WebSocket URL: `wss://livekit.yourdomain.com`
@@ -929,33 +946,35 @@ nc -u YOUR_VPS_IP 50000
 LiveKit requires JWT tokens for client authentication. Generate them in your backend:
 
 #### Node.js Example (for n8n)
+
 ```javascript
 // Install in n8n: npm install livekit-server-sdk
-const { AccessToken } = require('livekit-server-sdk');
+const { AccessToken } = require("livekit-server-sdk");
 
 // Create token for a participant
 const at = new AccessToken(
   process.env.LIVEKIT_API_KEY,
   process.env.LIVEKIT_API_SECRET,
   {
-    identity: 'user-' + Date.now(),
-    name: 'User Name'
+    identity: "user-" + Date.now(),
+    name: "User Name",
   }
 );
 
 // Grant room permissions
 at.addGrant({
   roomJoin: true,
-  room: 'my-room',
+  room: "my-room",
   canPublish: true,
-  canSubscribe: true
+  canSubscribe: true,
 });
 
 const token = at.toJwt();
-console.log('Access Token:', token);
+console.log("Access Token:", token);
 ```
 
 #### Python Example
+
 ```python
 from livekit import AccessToken, VideoGrants
 
@@ -982,7 +1001,8 @@ print(f"Access Token: {jwt_token}")
 #### CLI Helper Script (Quickest for Testing)
 
 For quick testing without writing code, use the included helper script:
-```bash
+
+````bash
 # Generate token with default values
 bash scripts/generate_livekit_token.sh
 
@@ -1042,9 +1062,10 @@ return {
 // 6. Generate response with LLM
 // 7. Synthesize speech with TTS
 // 8. Publish audio back to LiveKit room
-```
+````
 
 #### Meeting Recording Automation
+
 ```javascript
 // 1. LiveKit Webhook: recording.finished
 // 2. HTTP Request Node: Download recording
@@ -1058,6 +1079,7 @@ Headers: { Authorization: Bearer YOUR_TOKEN }
 ```
 
 #### Real-Time AI Voice Assistant
+
 ```javascript
 // Backend generates token and room for user
 // Frontend connects to LiveKit
@@ -1075,39 +1097,41 @@ Headers: { Authorization: Bearer YOUR_TOKEN }
 ### Client SDK Integration
 
 #### JavaScript/TypeScript (Web)
+
 ```javascript
-import { Room, RoomEvent } from 'livekit-client';
+import { Room, RoomEvent } from "livekit-client";
 
 // Get token from your backend
-const token = await fetch('/api/get-livekit-token').then(r => r.json());
+const token = await fetch("/api/get-livekit-token").then((r) => r.json());
 
 // Connect to room
 const room = new Room();
-await room.connect('wss://livekit.yourdomain.com', token);
+await room.connect("wss://livekit.yourdomain.com", token);
 
 // Enable microphone
 await room.localParticipant.setMicrophoneEnabled(true);
 
 // Listen for other participants
 room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
-  if (track.kind === 'audio') {
-    track.attach(document.getElementById('audio-element'));
+  if (track.kind === "audio") {
+    track.attach(document.getElementById("audio-element"));
   }
 });
 ```
 
 #### React Example
+
 ```jsx
-import { LiveKitRoom, AudioTrack } from '@livekit/components-react';
+import { LiveKitRoom, AudioTrack } from "@livekit/components-react";
 
 function VoiceChat() {
-  const [token, setToken] = useState('');
+  const [token, setToken] = useState("");
 
   useEffect(() => {
     // Fetch token from backend
-    fetch('/api/livekit-token')
-      .then(r => r.json())
-      .then(data => setToken(data.token));
+    fetch("/api/livekit-token")
+      .then((r) => r.json())
+      .then((data) => setToken(data.token));
   }, []);
 
   return (
@@ -1126,6 +1150,7 @@ function VoiceChat() {
 ### AI Voice Agent Use Cases
 
 **Customer Support Bot:**
+
 - User calls in via browser
 - LiveKit streams audio to n8n
 - Whisper transcribes in real-time
@@ -1134,18 +1159,21 @@ function VoiceChat() {
 - Bot responds naturally
 
 **Language Learning Assistant:**
+
 - Student practices conversation
 - AI analyzes pronunciation
 - Provides instant feedback
 - Tracks progress over time
 
 **Voice-Controlled Automation:**
+
 - "Turn on the lights"
 - LiveKit → Whisper → Intent detection
 - n8n triggers home automation
 - TTS confirms action
 
 **Live Translation:**
+
 - Multi-language conference
 - Real-time transcription
 - Translation via LibreTranslate
@@ -1154,6 +1182,7 @@ function VoiceChat() {
 ### Security Considerations
 
 **Why JWT Authentication:**
+
 - Tokens expire automatically
 - Granular permissions per room
 - Backend controls access
@@ -1161,36 +1190,38 @@ function VoiceChat() {
 - Revocable per session
 
 **Token Permissions:**
+
 ```javascript
 // Minimal permissions (view only)
 token.addGrant({
   roomJoin: true,
-  room: 'room-name',
+  room: "room-name",
   canPublish: false,
-  canSubscribe: true
+  canSubscribe: true,
 });
 
 // Full permissions (speak and listen)
 token.addGrant({
   roomJoin: true,
-  room: 'room-name',
+  room: "room-name",
   canPublish: true,
-  canSubscribe: true
+  canSubscribe: true,
 });
 
 // Admin permissions
 token.addGrant({
   roomJoin: true,
-  room: 'room-name',
+  room: "room-name",
   canPublish: true,
   canSubscribe: true,
-  roomAdmin: true
+  roomAdmin: true,
 });
 ```
 
 ### Troubleshooting LiveKit
 
 **No Audio/Video:**
+
 ```bash
 # Check if LiveKit server is running
 docker ps | grep livekit
@@ -1207,6 +1238,7 @@ nc -u YOUR_VPS_IP 50000
 ```
 
 **Token Issues:**
+
 ```bash
 # Check API Key/Secret in .env
 cat .env | grep LIVEKIT
@@ -1216,6 +1248,7 @@ cat .env | grep LIVEKIT
 ```
 
 **WebSocket Connection Failed:**
+
 ```bash
 # Check Caddy routing
 docker logs caddy | grep livekit
@@ -1229,6 +1262,7 @@ curl -i -N -H "Connection: Upgrade" \
 ```
 
 **Media Stream Issues:**
+
 ```bash
 # Check SFU logs for errors
 docker logs livekit-sfu --tail 100
@@ -1251,6 +1285,7 @@ cat .env | grep JVB_DOCKER_HOST_ADDRESS
 ### Monitoring & Debugging
 
 **LiveKit Admin API:**
+
 ```bash
 # List active rooms
 curl -X GET http://livekit-server:7881/rooms \
@@ -1267,6 +1302,7 @@ curl -X DELETE http://livekit-server:7881/rooms/room-name \
 
 **Webhook Events:**
 Configure webhooks in n8n to receive events:
+
 - `room_started`
 - `room_finished`
 - `participant_joined`
@@ -1277,6 +1313,7 @@ Configure webhooks in n8n to receive events:
 ### Alternative Solutions
 
 **If UDP is blocked:**
+
 1. Use TURN server (requires additional setup)
 2. Switch to a WebRTC-friendly VPS provider
 3. Use LiveKit Cloud (managed service)
@@ -1310,6 +1347,7 @@ AI LaunchKit includes a comprehensive mail system: Mailpit for development/testi
 ### 🎯 How It Works
 
 **Mailpit** (Always Active):
+
 - Captures ALL emails sent by any service
 - Web UI to view emails: `https://mail.yourdomain.com`
 - No emails leave your server - perfect for development and testing
@@ -1317,6 +1355,7 @@ AI LaunchKit includes a comprehensive mail system: Mailpit for development/testi
 - All services automatically configured to use Mailpit by default
 
 **Docker-Mailserver** (Optional - Production):
+
 - Full-featured production mail server
 - Real email delivery with SMTP/IMAP support
 - DKIM, SPF, DMARC support for deliverability
@@ -1324,6 +1363,7 @@ AI LaunchKit includes a comprehensive mail system: Mailpit for development/testi
 - Select during installation wizard
 
 **SnappyMail** (Optional - Webmail Client):
+
 - Modern, lightweight webmail interface
 - Ultra-fast with 138KB initial load
 - 99% Lighthouse performance score
@@ -1336,6 +1376,7 @@ AI LaunchKit includes a comprehensive mail system: Mailpit for development/testi
 If you selected Docker-Mailserver during installation:
 
 #### Automatic Configuration
+
 - A `noreply@yourdomain.com` account is created automatically
 - All services are configured to use Docker-Mailserver for real email delivery
 - SMTP settings are automatically applied to all services
@@ -1345,6 +1386,7 @@ If you selected Docker-Mailserver during installation:
 After installation, configure these DNS records for proper email delivery:
 
 1. **MX Record:**
+
    ```
    Type: MX
    Name: @ (or yourdomain.com)
@@ -1353,6 +1395,7 @@ After installation, configure these DNS records for proper email delivery:
    ```
 
 2. **A Record for mail subdomain:**
+
    ```
    Type: A
    Name: mail
@@ -1360,6 +1403,7 @@ After installation, configure these DNS records for proper email delivery:
    ```
 
 3. **SPF Record:**
+
    ```
    Type: TXT
    Name: @ (or yourdomain.com)
@@ -1367,6 +1411,7 @@ After installation, configure these DNS records for proper email delivery:
    ```
 
 4. **DMARC Record:**
+
    ```
    Type: TXT
    Name: _dmarc
@@ -1374,13 +1419,14 @@ After installation, configure these DNS records for proper email delivery:
    ```
 
 5. **DKIM Record (after installation):**
+
    ```bash
    # Generate DKIM keys
    docker exec mailserver setup config dkim
-   
+
    # Display the public key to add to DNS
    docker exec mailserver cat /tmp/docker-mailserver/opendkim/keys/yourdomain.com/mail.txt
-   
+
    # Add the displayed key as TXT record for mail._domainkey.yourdomain.com
    ```
 
@@ -1406,6 +1452,7 @@ docker logs mailserver
 #### Service Configuration
 
 When Docker-Mailserver is active, all services automatically use these settings:
+
 - **SMTP Host:** `mailserver` (internal)
 - **Port:** 587
 - **Security:** STARTTLS
@@ -1419,16 +1466,19 @@ If you selected SnappyMail during installation:
 #### Initial Configuration
 
 1. **Get the admin password:**
+
    ```bash
    docker exec snappymail cat /var/lib/snappymail/_data_/_default_/admin_password.txt
    ```
 
 2. **Access the admin panel:**
+
    - URL: `https://webmail.yourdomain.com/?admin`
    - Username: `admin`
    - Password: (from step 1)
 
 3. **Configure your mail domain:**
+
    - Go to Domains → Add Domain
    - Domain: `yourdomain.com`
    - IMAP Server: `mailserver`
@@ -1478,23 +1528,27 @@ SMTP_SECURE=true
 #### n8n Email Configuration
 
 n8n automatically uses the SMTP settings for:
+
 - User invitations
 - Password resets
 - Workflow notifications
 - Send Email node
 
 **Using Send Email node in workflows:**
+
 1. Add Send Email node to your workflow
 2. Create SMTP credentials based on your mail mode:
-   
+
    **For Mailpit (development):**
+
    - Host: `mailpit`
    - Port: 1025
    - User: admin
    - Password: admin
    - SSL/TLS: OFF
-   
+
    **For Docker-Mailserver (production):**
+
    - Host: `mailserver`
    - Port: 587
    - User: noreply@yourdomain.com
@@ -1504,6 +1558,7 @@ n8n automatically uses the SMTP settings for:
 #### Supabase Email Configuration
 
 Supabase uses the mail system for:
+
 - User registration confirmations
 - Password reset emails
 - Magic link authentication
@@ -1513,11 +1568,13 @@ The configuration is automatic, no manual setup needed.
 #### Odoo Email Configuration
 
 Odoo can use the mail system for:
+
 - Customer invoices
 - Order confirmations
 - Internal notifications
 
 **Configure in Odoo:**
+
 1. Go to Settings → Technical → Outgoing Mail Servers
 2. Create new server:
    - For **Mailpit**: SMTP Server: `mailpit`, Port: 1025, No security
@@ -1526,6 +1583,7 @@ Odoo can use the mail system for:
 #### Cal.com Email Configuration
 
 Cal.com automatically uses the mail system for:
+
 - Booking confirmations to both parties
 - Calendar invitations (.ics files)
 - Reminder notifications
@@ -1536,12 +1594,14 @@ The configuration is automatic via `EMAIL_*` environment variables.
 #### Other Services
 
 Most services that support SMTP can be configured similarly:
+
 - **Mailpit:** Host: `mailpit`, Port: 1025, No auth, No SSL
 - **Docker-Mailserver:** Host: `mailserver`, Port: 587, Auth required, STARTTLS
 
 ### 📊 Viewing Captured Emails
 
 **Mailpit Web UI (Development/Testing):**
+
 - URL: `https://mail.yourdomain.com`
 - Features:
   - Search emails
@@ -1551,6 +1611,7 @@ Most services that support SMTP can be configured similarly:
   - API for automation
 
 **SnappyMail Web UI (Production):**
+
 - URL: `https://webmail.yourdomain.com`
 - Features:
   - Full email client functionality
@@ -1560,6 +1621,7 @@ Most services that support SMTP can be configured similarly:
   - PGP encryption support
 
 **Example: Testing email in development:**
+
 ```javascript
 // n8n workflow to test email
 1. Manual Trigger
@@ -1581,6 +1643,7 @@ Most services that support SMTP can be configured similarly:
 ### ⚙️ Troubleshooting Mail Issues
 
 **Emails not appearing:**
+
 ```bash
 # Check if mail service is running
 docker ps | grep mailpit
@@ -1599,6 +1662,7 @@ docker exec n8n nc -zv mailserver 587
 ```
 
 **Service can't send emails:**
+
 ```bash
 # Check SMTP settings in .env
 grep "SMTP_\|MAIL_MODE" .env
@@ -1613,6 +1677,7 @@ docker logs [service] | grep -i smtp
 ```
 
 **Docker-Mailserver specific issues:**
+
 ```bash
 # Check DKIM configuration
 docker exec mailserver setup config dkim status
@@ -1628,6 +1693,7 @@ docker exec mailserver postqueue -p
 ```
 
 **SnappyMail specific issues:**
+
 ```bash
 # Check if SnappyMail is running
 docker ps | grep snappymail
@@ -1649,6 +1715,7 @@ docker compose restart snappymail
 ### 🎯 Quick Start Examples
 
 #### Build a Web App with AI (bolt.diy)
+
 ```
 1. Open bolt.yourdomain.com
 2. Describe your app: "Create a todo app with dark mode"
@@ -1657,6 +1724,7 @@ docker compose restart snappymail
 ```
 
 #### Create an Automation Workflow (n8n)
+
 ```javascript
 // Example: Process uploaded videos
 // Execute Command Node
@@ -1665,6 +1733,7 @@ Arguments: -i /data/media/input.mp4 -vn -codec:a mp3 /data/media/output.mp3
 ```
 
 #### Generate UI Components (OpenUI)
+
 ```
 1. Open openui.yourdomain.com
 2. Describe: "Modern pricing card with gradient"
@@ -1678,6 +1747,7 @@ Cal.com provides a powerful open-source scheduling platform that seamlessly inte
 ### Initial Setup
 
 **First Login to Cal.com:**
+
 1. Navigate to `https://cal.yourdomain.com`
 2. First user to register becomes admin
 3. Complete onboarding wizard:
@@ -1687,6 +1757,7 @@ Cal.com provides a powerful open-source scheduling platform that seamlessly inte
 4. Your booking link: `https://cal.yourdomain.com/[username]`
 
 **Generate API Key for n8n:**
+
 1. Go to Settings → Developer → API Keys
 2. Click "Create new API key"
 3. Name it "n8n Integration"
@@ -1701,6 +1772,7 @@ n8n provides native Cal.com nodes for seamless integration:
 The Cal.com Trigger node listens for events in your Cal.com account:
 
 **Available Trigger Events:**
+
 - `booking.created` - New booking made
 - `booking.rescheduled` - Booking time changed
 - `booking.cancelled` - Booking cancelled
@@ -1709,6 +1781,7 @@ The Cal.com Trigger node listens for events in your Cal.com account:
 - `booking.requested` - Booking request received (for approval)
 
 **Setup Cal.com Trigger:**
+
 1. Add Cal.com Trigger node to your workflow
 2. Create Cal.com credentials:
    - **API Key**: Your generated key from Cal.com
@@ -1721,6 +1794,7 @@ The Cal.com Trigger node listens for events in your Cal.com account:
 The Cal.com node provides actions to interact with Cal.com:
 
 **Available Operations:**
+
 - **Event Types**: List, get, create, update, delete event types
 - **Bookings**: List, get, cancel, confirm bookings
 - **Availability**: Get/set availability schedules
@@ -1771,7 +1845,7 @@ Prompt: |
   Meeting: {{ $json.title }}
   Attendee: {{ $json.attendees[0].name }}
   Company Research: {{ $json.research }}
-  
+
   Include:
   - Key talking points
   - Relevant questions to ask
@@ -1824,12 +1898,12 @@ To: {{ $json.attendees[0].email }}
 Subject: Thank you for meeting with us!
 Body: |
   Hi {{ $json.attendees[0].name }},
-  
+
   Thank you for taking the time to meet today.
-  
+
   As discussed, here are the next steps:
   [Auto-populate based on meeting type]
-  
+
   You can book a follow-up meeting here:
   https://cal.yourdomain.com/{{ $json.organizer.username }}/followup
 
@@ -1840,7 +1914,7 @@ Schedule follow-up task
 
 ### Example: Smart Scheduling with AI
 
-```javascript
+````javascript
 // 1. Webhook Trigger
 Receive scheduling request via form/chat
 
@@ -1864,7 +1938,7 @@ Use top-ranked slot
 
 // 6. Send Confirmation
 Email/SMS with calendar invite
-```
+````
 
 ### Advanced Cal.com API Usage
 
@@ -1906,18 +1980,21 @@ Body: {
 ### Cal.com Features for Automation
 
 **Event Types:**
+
 - **Recurring Events**: Weekly standups, monthly reviews
 - **Team Events**: Round-robin assignment, collective availability
 - **Paid Events**: Stripe/PayPal integration for consultations
 - **Approval Required**: Screen bookings before confirmation
 
 **Integrations:**
+
 - **Video Conferencing**: Zoom, Google Meet, Jitsi (auto-generated links)
 - **Calendar Sync**: Google Calendar, Office 365, CalDAV
 - **Payment Processing**: Stripe, PayPal for paid consultations
 - **Analytics**: Track no-shows, popular times, conversion rates
 
 **Customization:**
+
 - **Custom Fields**: Collect additional info during booking
 - **Workflows**: Set up reminders, follow-ups (complements n8n)
 - **Webhooks**: Real-time events to n8n workflows
@@ -1971,6 +2048,7 @@ Body: {
 ### Email Notifications
 
 Cal.com automatically sends emails for:
+
 - **Booking Confirmations**: Sent to both organizer and attendee
 - **Reminders**: Configurable timing before meetings
 - **Cancellations**: Notification to all parties
@@ -1992,7 +2070,9 @@ All emails are handled by your configured mail system (Mailpit for development, 
 Vikunja provides a modern task management platform with Kanban, Gantt, and calendar views, perfect for project automation workflows in n8n.
 
 ### Initial Setup
+
 1. **First Login to Vikunja:**
+
    - Navigate to `https://vikunja.yourdomain.com`
    - Click "Register" to create your first account (becomes admin automatically)
    - Create your first project and lists
@@ -2004,6 +2084,7 @@ Vikunja provides a modern task management platform with Kanban, Gantt, and calen
    - **Authentication:** Bearer token from Vikunja API settings
 
 ### Key Features for Automation
+
 - **Multiple Views:** Kanban boards, Gantt charts, Calendar, Table view
 - **Collaboration:** Team workspaces, task assignments, file attachments (up to 20MB)
 - **Import/Export:** From Todoist, Trello, Microsoft To-Do, CSV/JSON export
@@ -2011,12 +2092,14 @@ Vikunja provides a modern task management platform with Kanban, Gantt, and calen
 - **Mobile Apps:** iOS (App Store - "Vikunja Cloud") and Android (Play Store - "Vikunja")
 
 ### Example Workflows
+
 - **Task Automation Pipeline:** Create tasks from emails/webhooks
 - **Project Status Dashboard:** Daily task summaries and statistics
 - **Recurring Task Generator:** Automatically create daily/weekly tasks
 - **Task Import:** Migrate from Trello, Asana, or CSV files
 
 ### Tips for n8n Integration
+
 - Use internal URL: `http://vikunja:3456` from n8n containers
 - Generate dedicated API tokens for n8n workflows
 - Add Wait nodes between bulk operations
@@ -2030,6 +2113,7 @@ Leantime is a goal-oriented project management suite designed specifically for A
 ### Initial Setup
 
 **First Login to Leantime:**
+
 1. Navigate to `https://leantime.yourdomain.com`
 2. The installation wizard starts automatically
 3. Create your admin account (first user becomes admin)
@@ -2037,6 +2121,7 @@ Leantime is a goal-oriented project management suite designed specifically for A
 5. Generate API key in User Settings → API Access
 
 **MySQL 8.4 Auto-Installation:**
+
 - Leantime automatically installs MySQL 8.4 during setup
 - This MySQL instance can be reused for other services (WordPress, Ghost, etc.)
 - Root password available in `.env` file
@@ -2046,6 +2131,7 @@ Leantime is a goal-oriented project management suite designed specifically for A
 **Important:** Leantime uses JSON-RPC 2.0 API, not REST. All requests go to `/api/jsonrpc` endpoint.
 
 **Create Leantime Credentials in n8n:**
+
 1. Go to Credentials → New → Header Auth
 2. Configure:
    - Name: `Leantime API`
@@ -2053,6 +2139,7 @@ Leantime is a goal-oriented project management suite designed specifically for A
    - Header Value: `[Your API key from Leantime settings]`
 
 **HTTP Request Node Configuration:**
+
 ```javascript
 Method: POST
 URL: http://leantime:8080/api/jsonrpc
@@ -2066,6 +2153,7 @@ Body Type: JSON
 ### JSON-RPC API Examples
 
 #### Get All Projects
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -2076,6 +2164,7 @@ Body Type: JSON
 ```
 
 #### Get All Tickets/Tasks
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -2086,6 +2175,7 @@ Body Type: JSON
 ```
 
 #### Create New Task
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -2106,6 +2196,7 @@ Body Type: JSON
 ```
 
 #### Update Existing Task
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -2272,12 +2363,14 @@ Convert ideas into actionable tasks:
 ### Available JSON-RPC Methods
 
 **Project Management:**
+
 - `leantime.rpc.projects.getAll` - Get all projects
 - `leantime.rpc.projects.getProject` - Get specific project
 - `leantime.rpc.projects.addProject` - Create new project
 - `leantime.rpc.projects.updateProject` - Update project
 
 **Task/Ticket Management:**
+
 - `leantime.rpc.tickets.getAll` - Get all tickets
 - `leantime.rpc.tickets.getTicket` - Get specific ticket
 - `leantime.rpc.tickets.addTicket` - Create new ticket
@@ -2285,11 +2378,13 @@ Convert ideas into actionable tasks:
 - `leantime.rpc.tickets.deleteTicket` - Delete ticket
 
 **Time Tracking:**
+
 - `leantime.rpc.timesheets.getAll` - Get timesheets
 - `leantime.rpc.timesheets.addTime` - Log time entry
 - `leantime.rpc.timesheets.updateTime` - Update time entry
 
 **Milestones:**
+
 - `leantime.rpc.tickets.getAllMilestones` - Get milestones
 - `leantime.rpc.tickets.addMilestone` - Create milestone
 
@@ -2325,17 +2420,20 @@ const PRIORITY = {
 ### Leantime Features for Automation
 
 **Strategy Tools:**
+
 - **Goal Canvas:** Define and track OKRs
 - **Lean Canvas:** Business model planning
 - **SWOT Analysis:** Strategic assessment
 - **Opportunity Canvas:** Market analysis
 
 **Time Management:**
+
 - **Built-in Timer:** Track time directly in tasks
 - **Timesheets:** Exportable reports
 - **Estimates vs Actual:** Improve planning accuracy
 
 **ADHD-Friendly Features:**
+
 - **Dopamine-driven UI:** Gamification elements
 - **Focus Mode:** Minimize distractions
 - **Break Reminders:** Pomodoro technique support
@@ -2357,13 +2455,16 @@ const PRIORITY = {
 **Common Issues:**
 
 1. **"Method not found" Error:**
+
    - Check method name spelling and case sensitivity
    - Ensure format is `leantime.rpc.resource.method`
 
 2. **Authentication Failed:**
+
    - Verify API key is correct
 
 3. **Invalid Parameters:**
+
    - Wrap parameters in `params` object
    - For updates, include ID separately from values
 
@@ -2382,21 +2483,24 @@ if (response.error) {
 }
 
 if (!response.result) {
-  throw new Error('No result returned from Leantime');
+  throw new Error("No result returned from Leantime");
 }
 
 // Process successful response
-return [{
-  json: {
-    success: true,
-    data: response.result
-  }
-}];
+return [
+  {
+    json: {
+      success: true,
+      data: response.result,
+    },
+  },
+];
 ```
 
 ### Leantime Philosophy Integration
 
 Leantime's "Start with WHY" approach fits perfectly with n8n automation:
+
 - Automate goal tracking and alignment
 - Generate insights from strategic canvases
 - Create feedback loops between execution and strategy
@@ -2409,6 +2513,7 @@ Kimai is a professional time tracking solution from Austria that's DSGVO/GDPR-co
 ### Initial Setup
 
 **First Login to Kimai:**
+
 1. Navigate to `https://time.yourdomain.com`
 2. Login with admin credentials from installation report:
    - Email: Your email address (set during installation)
@@ -2420,6 +2525,7 @@ Kimai is a professional time tracking solution from Austria that's DSGVO/GDPR-co
    - Add team members (Settings → Users)
 
 **Generate API Token for n8n:**
+
 1. Click on your profile icon → API Access
 2. Click "Create Token"
 3. Name it "n8n Integration"
@@ -2429,6 +2535,7 @@ Kimai is a professional time tracking solution from Austria that's DSGVO/GDPR-co
 ### n8n Integration Setup
 
 **Create Kimai Credentials in n8n:**
+
 ```javascript
 // HTTP Request Credentials
 Authentication: Header Auth
@@ -2491,7 +2598,7 @@ URL: http://kimai:8001/api/timesheets
 Query Parameters:
   begin: {{ $now.startOf('week').toISO() }}
   end: {{ $now.endOf('week').toISO() }}
-  
+
 // 3. Code Node: Group by customer
 const timesheets = $input.first().json;
 const byCustomer = {};
@@ -2578,21 +2685,25 @@ Body: {
 ### API Endpoints Reference
 
 **Timesheets:**
+
 - `GET /api/timesheets` - List entries
 - `POST /api/timesheets` - Create entry
 - `PATCH /api/timesheets/{id}` - Update entry
 - `DELETE /api/timesheets/{id}` - Delete entry
 
 **Projects:**
+
 - `GET /api/projects` - List projects
 - `POST /api/projects` - Create project
 - `GET /api/projects/{id}/rates` - Get project statistics
 
 **Customers:**
+
 - `GET /api/customers` - List customers
 - `POST /api/customers` - Create customer
 
 **Activities:**
+
 - `GET /api/activities` - List activities
 - `POST /api/activities` - Create activity
 
@@ -2604,6 +2715,7 @@ Kimai has official mobile apps for on-the-go time tracking:
 **Android:** [Play Store - Kimai Mobile](https://play.google.com/store/apps/details?id=de.cloudrizon.kimai)
 
 Configure mobile app:
+
 1. Server URL: `https://time.yourdomain.com`
 2. Use API token authentication
 3. Enable offline time tracking
@@ -2621,27 +2733,32 @@ Configure mobile app:
 ### Advanced Features
 
 **Team Management:**
+
 - First user is Super Admin
 - Role hierarchy: User → Teamlead → Admin → Super-Admin
 - Teams can have restricted access to specific customers/projects
 
 **Invoice Templates:**
+
 - Customizable invoice templates (Settings → Invoice)
 - Supports multiple languages
 - Can include company logo and custom fields
 
 **Time Rounding:**
+
 - Configure rounding rules (Settings → Timesheet)
 - Options: 1, 5, 10, 15, 30 minutes
 - Can round up, down, or to nearest
 
 **API Rate Limits:**
+
 - Default: 1000 requests per hour
 - Can be adjusted in local.yaml configuration
 
 ### Troubleshooting
 
 **API Returns 401 Unauthorized:**
+
 ```bash
 # Verify credentials are correct
 docker exec kimai bin/console kimai:user:list
@@ -2651,6 +2768,7 @@ docker exec kimai grep -r "api" /opt/kimai/config/
 ```
 
 **Database Connection Issues:**
+
 ```bash
 # Check MySQL is running
 docker ps | grep kimai_db
@@ -2660,6 +2778,7 @@ docker exec kimai_db mysql -u kimai -p${KIMAI_DB_PASSWORD} -e "SHOW DATABASES;"
 ```
 
 **Time Entries Not Showing:**
+
 ```bash
 # Clear Kimai cache
 docker exec kimai bin/console cache:clear --env=prod
@@ -2680,6 +2799,7 @@ Invoice Ninja provides a complete invoicing and payment platform with 40+ paymen
 ### Initial Setup
 
 **First Login to Invoice Ninja:**
+
 1. Navigate to `https://invoices.yourdomain.com`
 2. Login with admin credentials from installation report:
    - Email: Your email address (set during installation)
@@ -2691,6 +2811,7 @@ Invoice Ninja provides a complete invoicing and payment platform with 40+ paymen
    - Email templates
 
 **⚠️ IMPORTANT - APP_KEY:**
+
 - Invoice Ninja requires a Laravel APP_KEY for encryption
 - This is automatically generated during installation
 - If missing, generate manually:
@@ -2700,6 +2821,7 @@ Invoice Ninja provides a complete invoicing and payment platform with 40+ paymen
   ```
 
 **Post-Setup Security:**
+
 - After first login, remove these from `.env`:
   - `IN_USER_EMAIL` environment variable
   - `IN_PASSWORD` environment variable
@@ -2710,6 +2832,7 @@ Invoice Ninja provides a complete invoicing and payment platform with 40+ paymen
 Invoice Ninja has **native n8n node support** for seamless integration!
 
 **Create Invoice Ninja Credentials in n8n:**
+
 1. In n8n, go to Credentials → New → Invoice Ninja API
 2. Configure:
    - **URL**: `http://invoiceninja:8000` (internal) or `https://invoices.yourdomain.com` (external)
@@ -2717,6 +2840,7 @@ Invoice Ninja has **native n8n node support** for seamless integration!
    - **Secret** (optional): For webhook validation
 
 **Generate API Token in Invoice Ninja:**
+
 1. Login to Invoice Ninja
 2. Settings → Account Management → API Tokens
 3. Click "New Token"
@@ -2872,6 +2996,7 @@ Fields: {
 Invoice Ninja supports 40+ payment gateways. Most popular:
 
 **Stripe Setup:**
+
 1. Settings → Payment Settings → Configure Gateways
 2. Select Stripe → Configure
 3. Add API keys from Stripe Dashboard
@@ -2879,12 +3004,14 @@ Invoice Ninja supports 40+ payment gateways. Most popular:
 5. Configure webhook: `https://invoices.yourdomain.com/stripe/webhook`
 
 **PayPal Setup:**
+
 1. Settings → Payment Settings → Configure Gateways
 2. Select PayPal → Configure
 3. Add Client ID and Secret from PayPal Developer
 4. Set return URL: `https://invoices.yourdomain.com/paypal/completed`
 
 **Webhook Security:**
+
 - Each gateway provides webhook endpoints
 - Use webhook secrets in n8n for validation
 - Test with Stripe CLI or PayPal sandbox first
@@ -2928,6 +3055,7 @@ Body: {
 ### Client Portal Features
 
 The client portal allows customers to:
+
 - View and pay invoices online
 - Download invoices and receipts
 - View payment history
@@ -2938,6 +3066,7 @@ The client portal allows customers to:
 **Portal URL:** `https://invoices.yourdomain.com/client/login`
 
 **Customization:**
+
 - Settings → Client Portal
 - Enable/disable features
 - Customize terms and privacy policy
@@ -2972,13 +3101,15 @@ Fields: {
 ### Migration from Other Systems
 
 Invoice Ninja can import from:
+
 - QuickBooks
-- FreshBooks  
+- FreshBooks
 - Wave
 - Zoho Invoice
 - CSV files
 
 **Import Process:**
+
 1. Settings → Import
 2. Select source system
 3. Upload export file
@@ -2988,6 +3119,7 @@ Invoice Ninja can import from:
 ### Troubleshooting
 
 **500 Internal Server Error:**
+
 ```bash
 # Run migrations
 docker exec invoiceninja php artisan migrate --force
@@ -3001,6 +3133,7 @@ docker logs invoiceninja --tail 100
 ```
 
 **PDFs not generating:**
+
 ```bash
 # Check SnappDF
 docker exec invoiceninja php artisan ninja:check-pdf
@@ -3010,6 +3143,7 @@ docker exec invoiceninja php artisan ninja:check-pdf
 ```
 
 **Email delivery issues:**
+
 ```bash
 # Test mail configuration
 docker exec invoiceninja php artisan tinker
@@ -3017,6 +3151,7 @@ docker exec invoiceninja php artisan tinker
 ```
 
 **API returns 401:**
+
 - Verify API token is correct
 - Check token permissions in Invoice Ninja
 - Ensure token hasn't expired
@@ -3038,13 +3173,14 @@ For large-scale operations:
 # Increase PHP memory in docker-compose.yml
 environment:
   - PHP_MEMORY_LIMIT=512M
-  
-# Enable Redis caching (already configured)
+
+  # Enable Redis caching (already configured)
   - CACHE_DRIVER=redis
   - SESSION_DRIVER=redis
 ```
 
 **Queue Processing:**
+
 - Invoice Ninja uses queues for emails and PDFs
 - Monitor with: `docker exec invoiceninja php artisan queue:work --stop-when-empty`
 
@@ -3055,6 +3191,7 @@ Formbricks provides a privacy-first survey platform that seamlessly integrates w
 ### Initial Setup
 
 **First Login to Formbricks:**
+
 1. Navigate to `https://forms.yourdomain.com`
 2. Click "Sign up" to create the first admin account
 3. First user automatically becomes organization owner
@@ -3064,6 +3201,7 @@ Formbricks provides a privacy-first survey platform that seamlessly integrates w
 ### n8n Integration Setup
 
 **Install Native Formbricks Node (Community):**
+
 ```bash
 # In n8n, install community node
 docker exec -it n8n bash
@@ -3074,6 +3212,7 @@ docker compose -p localai restart n8n
 ```
 
 **Create Formbricks Credentials:**
+
 1. In n8n: Credentials → New → Formbricks API
 2. Configure:
    - **Host:** `http://formbricks:3000` (internal)
@@ -3116,8 +3255,8 @@ return {
   name: formData.name,
   email: formData.email,
   company: formData.company,
-  source: 'formbricks',
-  score: formData.qualification_score
+  source: "formbricks",
+  score: formData.qualification_score,
 };
 
 // 3. Supabase/Odoo Node: Create lead
@@ -3148,6 +3287,7 @@ Metabase provides the most user-friendly open-source BI platform for creating da
 ### Initial Setup
 
 **First Login to Metabase:**
+
 1. Navigate to `https://analytics.yourdomain.com`
 2. Complete the setup wizard:
    - Choose your language
@@ -3163,6 +3303,7 @@ Metabase provides the most user-friendly open-source BI platform for creating da
 Metabase can connect to all databases in your AI LaunchKit installation:
 
 #### n8n Workflows Database
+
 ```
 Host: postgres
 Port: 5432
@@ -3172,6 +3313,7 @@ Password: Check POSTGRES_PASSWORD in .env
 ```
 
 #### Supabase Database (if installed)
+
 ```
 Host: supabase-db
 Port: 5432
@@ -3181,6 +3323,7 @@ Password: Check POSTGRES_PASSWORD in .env
 ```
 
 #### Invoice Ninja MySQL (if installed)
+
 ```
 Host: invoiceninja_db
 Port: 3306
@@ -3190,6 +3333,7 @@ Password: Check INVOICENINJA_DB_PASSWORD in .env
 ```
 
 #### Kimai MySQL (if installed)
+
 ```
 Host: kimai_db
 Port: 3306
@@ -3204,7 +3348,7 @@ Create a comprehensive dashboard to monitor your n8n automation performance:
 
 ```sql
 -- Daily Workflow Executions
-SELECT 
+SELECT
   DATE(started_at) as date,
   COUNT(*) as total_executions,
   SUM(CASE WHEN finished = true THEN 1 ELSE 0 END) as successful,
@@ -3215,7 +3359,7 @@ GROUP BY DATE(started_at)
 ORDER BY date DESC;
 
 -- Most Active Workflows
-SELECT 
+SELECT
   w.name as workflow_name,
   COUNT(e.id) as execution_count,
   AVG(EXTRACT(EPOCH FROM (e.stopped_at - e.started_at))) as avg_duration_seconds,
@@ -3228,7 +3372,7 @@ ORDER BY execution_count DESC
 LIMIT 10;
 
 -- Error Analysis
-SELECT 
+SELECT
   w.name as workflow_name,
   e.execution_error->>'message' as error_message,
   COUNT(*) as error_count
@@ -3246,9 +3390,10 @@ ORDER BY error_count DESC;
 Monitor your entire business stack with a unified dashboard:
 
 #### Revenue Tracking (Invoice Ninja)
+
 ```sql
 -- Monthly Recurring Revenue
-SELECT 
+SELECT
   DATE_FORMAT(date, '%Y-%m') as month,
   SUM(amount) as revenue,
   COUNT(DISTINCT client_id) as active_customers
@@ -3260,6 +3405,7 @@ ORDER BY month DESC;
 ```
 
 #### Time vs Revenue Analysis (Kimai + Invoice Ninja)
+
 ```javascript
 // Create a Question combining data from multiple sources
 // 1. Get hours from Kimai
@@ -3269,9 +3415,10 @@ ORDER BY month DESC;
 ```
 
 #### Project Health Metrics (Leantime)
+
 ```sql
 -- Project completion status
-SELECT 
+SELECT
   project_name,
   COUNT(*) as total_tasks,
   SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END) as completed,
@@ -3334,7 +3481,7 @@ Body: {{ $json.report }}
 // 3. IF Node: Failure rate > 20%
 
 // 4. Slack/Email Alert
-Message: "⚠️ High failure rate detected: {{ $json.failure_rate }}%"
+Message: "⚠️ High failure rate detected: {{ $json.failure_rate }}%";
 
 // 5. Create incident in tracking system
 ```
@@ -3342,6 +3489,7 @@ Message: "⚠️ High failure rate detected: {{ $json.failure_rate }}%"
 ### Advanced Features
 
 #### X-Ray - Automatic Insights
+
 1. Click on any table in your database
 2. Click the "X-ray this table" button
 3. Metabase automatically generates:
@@ -3351,6 +3499,7 @@ Message: "⚠️ High failure rate detected: {{ $json.failure_rate }}%"
    - Suggested questions
 
 #### Pulses - Scheduled Reports
+
 1. Create or open a dashboard
 2. Click "Sharing" → "Dashboard Subscriptions"
 3. Set schedule (daily, weekly, monthly)
@@ -3358,6 +3507,7 @@ Message: "⚠️ High failure rate detected: {{ $json.failure_rate }}%"
 5. Reports sent automatically with charts/data
 
 #### Public Sharing & Embedding
+
 ```javascript
 // Enable in Admin → Settings → Public Sharing
 // Generate public link for dashboard
@@ -3374,24 +3524,27 @@ Message: "⚠️ High failure rate detected: {{ $json.failure_rate }}%"
 ### Performance Optimization
 
 #### For Large Datasets
+
 ```yaml
 # Increase Java heap in docker-compose.yml
 environment:
-  - JAVA_OPTS=-Xmx2g -Xms2g  # Increase from 1g to 2g
-  - MB_QUERY_TIMEOUT_MINUTES=10  # Increase timeout
+  - JAVA_OPTS=-Xmx2g -Xms2g # Increase from 1g to 2g
+  - MB_QUERY_TIMEOUT_MINUTES=10 # Increase timeout
 ```
 
 #### Enable Caching
+
 1. Admin → Settings → Caching
 2. Enable caching
 3. Set TTL (e.g., 24 hours for daily reports)
 4. Enable adaptive caching for automatic optimization
 
 #### Create Materialized Views
+
 ```sql
 -- For frequently accessed aggregations
 CREATE MATERIALIZED VIEW workflow_daily_stats AS
-SELECT 
+SELECT
   DATE(started_at) as date,
   COUNT(*) as executions,
   AVG(EXTRACT(EPOCH FROM (stopped_at - started_at))) as avg_duration
@@ -3415,18 +3568,21 @@ REFRESH MATERIALIZED VIEW workflow_daily_stats;
 ### Common Use Cases
 
 #### SaaS Metrics Dashboard
+
 - MRR/ARR tracking (from Invoice Ninja)
 - Churn analysis (from customer database)
 - User engagement (from n8n workflow logs)
 - Support metrics (from ticket system)
 
 #### Team Performance Dashboard
+
 - Time tracking analysis (Kimai)
 - Project completion rates (Leantime/Vikunja)
 - Automation efficiency (n8n metrics)
 - Resource allocation (cross-system)
 
 #### Financial Dashboard
+
 - Revenue by customer/product
 - Outstanding invoices aging
 - Expense categorization
@@ -3435,6 +3591,7 @@ REFRESH MATERIALIZED VIEW workflow_daily_stats;
 ### Troubleshooting
 
 **Metabase Container Won't Start:**
+
 ```bash
 # Check logs
 docker logs metabase --tail 100
@@ -3449,6 +3606,7 @@ docker compose up -d metabase metabase_db
 ```
 
 **Can't Connect to Database:**
+
 - Verify hostname (use container names, not localhost)
 - Check credentials in .env file
 - Test connection from Metabase container:
@@ -3457,11 +3615,13 @@ docker compose up -d metabase metabase_db
   ```
 
 **Slow Queries:**
+
 - Add indexes to frequently queried columns
 - Use Metabase's caching feature
 - Consider creating summary tables updated via n8n
 
 **Memory Issues:**
+
 - Increase METABASE_MEMORY in .env (default 1g, can increase to 2g or 4g)
 - Monitor with: `docker stats metabase`
 
@@ -3479,6 +3639,7 @@ Baserow provides an Airtable-like database experience with real-time collaborati
 #### Initial Setup
 
 **First Login to Baserow:**
+
 1. Navigate to `https://baserow.yourdomain.com`
 2. Register as the first user (becomes admin automatically)
 3. Create your first workspace and database
@@ -3487,6 +3648,7 @@ Baserow provides an Airtable-like database experience with real-time collaborati
 #### Native n8n Baserow Node Setup
 
 **Create Baserow Credentials in n8n:**
+
 ```javascript
 // Baserow API Credentials
 Host: http://baserow:80
@@ -3578,7 +3740,7 @@ Prompt: |
   Product: {{ $json.product_name }}
   Features: {{ $json.features }}
   Target audience: {{ $json.target_market }}
-  
+
   Make it engaging and SEO-friendly (100-150 words).
 
 // 4. Baserow Node: Update with generated content
@@ -3602,11 +3764,11 @@ React to changes in Baserow using webhooks:
 Branch 1 - Row Created:
   // Send welcome email for new customers
   // Create tasks in project management system
-  
+
 Branch 2 - Row Updated:
   // Check for status changes
   // Notify team members of updates
-  
+
 Branch 3 - Row Deleted:
   // Archive related data
   // Send notification to admin
@@ -3629,6 +3791,7 @@ NocoDB transforms any database into a smart spreadsheet with powerful automation
 #### Initial Setup
 
 **First Login to NocoDB:**
+
 1. Navigate to `https://nocodb.yourdomain.com`
 2. Login with admin credentials from installation report:
    - Email: Your email address (set during installation)
@@ -3639,7 +3802,8 @@ NocoDB transforms any database into a smart spreadsheet with powerful automation
 #### n8n Integration Setup
 
 **Create NocoDB Credentials in n8n:**
-```javascript
+
+````javascript
 // HTTP Request Node Configuration
 Base URL: http://nocodb:8080
 Headers:
@@ -3740,17 +3904,17 @@ Method: GET
 URL: http://nocodb:8080/api/v1/db/data/v1/PROJECT_ID/TABLE_NAME
 Query Parameters:
   where: (UpdatedAt,gt,{{ $now.minus(1, 'hour').toISO() }})
-  
+
 // 3. Loop Over Records
 // 4. Switch Node: Sync based on status
 Branch 1 - New Records:
   // Create in external CRM
   // Update NocoDB with external ID
-  
+
 Branch 2 - Updated Records:
   // Update external system
   // Log sync timestamp
-  
+
 Branch 3 - Deleted Records:
   // Archive in external system
   // Mark as synced
@@ -3958,21 +4122,24 @@ Body: {
     {"id": 2, "field_1": "updated_value2"}
   ]
 }
-```
+````
 
 #### Baserow Features Highlights
 
 **Real-time Collaboration:**
+
 - Multiple users can edit simultaneously
 - Changes appear instantly for all users
 - Built-in conflict resolution
 
 **Data Safety:**
+
 - Undo/Redo functionality for all actions
 - Trash bin for deleted rows (unlike NocoDB)
 - Activity log tracks all changes
 
 **Templates and Views:**
+
 - 50+ ready-made templates
 - Multiple view types: Grid, Gallery, Form
 - Custom filters and sorting
@@ -3996,6 +4163,7 @@ Odoo 18 comes with built-in AI features and native n8n integration, enabling pow
 #### Initial Setup
 
 **First Login to Odoo:**
+
 1. Navigate to `https://odoo.yourdomain.com`
 2. Create your database with the master password from your `.env` file
 3. Set up your admin account with your email
@@ -4004,6 +4172,7 @@ Odoo 18 comes with built-in AI features and native n8n integration, enabling pow
 #### Native n8n Odoo Node Setup
 
 **Create Odoo Credentials in n8n:**
+
 ```javascript
 // Odoo API Credentials
 URL: http://odoo:8069
@@ -4106,7 +4275,7 @@ Prompt: |
   Product: {{ $json.name }}
   Category: {{ $json.categ_id }}
   Features: {{ $json.attribute_line_ids }}
-  
+
   Include:
   - Key benefits (3-5 bullet points)
   - Technical specifications
@@ -4221,6 +4390,7 @@ Twenty CRM offers a modern, Notion-like interface for customer relationship mana
 #### Initial Setup
 
 **First Login to Twenty CRM:**
+
 1. Navigate to `https://twenty.yourdomain.com`
 2. Create your first workspace during initial setup
 3. Configure workspace settings and customize fields
@@ -4229,6 +4399,7 @@ Twenty CRM offers a modern, Notion-like interface for customer relationship mana
 #### Native n8n HTTP Request Setup
 
 **Create Twenty CRM Credentials in n8n:**
+
 ```javascript
 // Twenty CRM API Credentials
 Base URL: http://twenty-crm:3000
@@ -4266,7 +4437,7 @@ Prompt: |
   Industry: {{ $json.industry }}
   Size: {{ $json.company_size }}
   Budget: {{ $json.budget_range }}
-  
+
   Provide score and reasoning in JSON format.
 
 // 4. HTTP Request Node: Update lead with AI score
@@ -4365,7 +4536,7 @@ Body: {
 const opportunities = items[0].json.data.opportunities.edges;
 const metrics = {
   total_value: opportunities.reduce((sum, opp) => sum + opp.node.amount, 0),
-  weighted_pipeline: opportunities.reduce((sum, opp) => 
+  weighted_pipeline: opportunities.reduce((sum, opp) =>
     sum + (opp.node.amount * opp.node.probability / 100), 0),
   by_stage: {}
 };
@@ -4395,6 +4566,7 @@ EspoCRM provides a comprehensive CRM solution with built-in workflow automation,
 #### Initial Setup
 
 **First Login to EspoCRM:**
+
 1. Navigate to `https://espocrm.yourdomain.com`
 2. Login with admin credentials (from .env file)
 3. Configure email settings in Administration → Outbound Emails
@@ -4403,6 +4575,7 @@ EspoCRM provides a comprehensive CRM solution with built-in workflow automation,
 #### Native n8n HTTP Request Setup
 
 **Create EspoCRM Credentials in n8n:**
+
 ```javascript
 // EspoCRM API Credentials
 Base URL: http://espocrm:80
@@ -4534,7 +4707,7 @@ Branch: "Proposal Sent"
     "relatedType": "Opportunity",
     "relatedId": "{{ $json.opportunityId }}"
   }
-  
+
   // Invoice Ninja Node: Create draft invoice
   // Email Node: Send proposal with tracking
 
@@ -4552,7 +4725,7 @@ Branch: "Closed Won"
     "website": "{{ $json.website }}",
     "industry": "{{ $json.industry }}"
   }
-  
+
   // Twenty CRM Node: Sync to secondary CRM
   // Kimai Node: Create project for time tracking
   // Vaultwarden Node: Store customer credentials
@@ -4582,11 +4755,11 @@ Query Parameters: {
 const opportunities = $json.list;
 const kpis = {
   total_pipeline: opportunities.reduce((sum, opp) => sum + opp.amount, 0),
-  weighted_forecast: opportunities.reduce((sum, opp) => 
+  weighted_forecast: opportunities.reduce((sum, opp) =>
     sum + (opp.amount * opp.probability / 100), 0),
-  average_deal_size: opportunities.length > 0 ? 
+  average_deal_size: opportunities.length > 0 ?
     opportunities.reduce((sum, opp) => sum + opp.amount, 0) / opportunities.length : 0,
-  conversion_rate: (opportunities.filter(o => o.stage === 'Closed Won').length / 
+  conversion_rate: (opportunities.filter(o => o.stage === 'Closed Won').length /
     opportunities.length * 100).toFixed(2)
 };
 
@@ -4610,18 +4783,21 @@ Attachments: Generated PDF report
 ### CRM Integration Best Practices
 
 **When to Use Twenty CRM:**
+
 - Startups and small teams needing flexibility
 - Projects requiring custom fields and views
 - GraphQL API integration requirements
 - Notion-style workspace organization
 
 **When to Use EspoCRM:**
+
 - Established businesses needing full CRM features
 - Email marketing and campaign management
 - Complex workflow automation requirements
 - Advanced reporting and analytics needs
 
 **Combining Both CRMs:**
+
 ```javascript
 // Sync contacts between systems
 // Twenty for daily operations, EspoCRM for campaigns
@@ -4661,11 +4837,13 @@ php bin/console cache:warmup
 ### Method 1: Native Mautic Node (Recommended)
 
 **Install Mautic Node in n8n:**
+
 1. Go to Settings → Community Nodes
 2. Install: `@digital-boss/n8n-nodes-mautic`
 3. Restart n8n workflow editor
 
 **Create OAuth2 Credentials:**
+
 ```javascript
 // Mautic OAuth2 Credentials
 Authorization URL: http://mautic_web/oauth/v2/authorize
@@ -4802,7 +4980,7 @@ Date From: {{ $now.minus(7, 'days').toISO() }}
 const activity = $json.activity;
 const lastEmail = activity.filter(a => a.type === 'email.read').pop();
 const lastClick = activity.filter(a => a.type === 'link.click').pop();
-const daysSinceEmail = lastEmail ? 
+const daysSinceEmail = lastEmail ?
   DateTime.fromISO(lastEmail.date).diffNow('days').days : 999;
 
 let nextAction = 'email';
@@ -4837,7 +5015,7 @@ Case 'reactivation':
   // Mautic Node: Move to reactivation campaign
   Operation: Remove from Campaign
   Campaign: current-campaign
-  
+
   // Mautic Node: Add to win-back campaign
   Operation: Add to Campaign
   Campaign: win-back-sequence
@@ -4869,7 +5047,7 @@ Prompt: |
   - Industry: {{ $json.industry }}
   - Previous interactions: {{ $json.tags }}
   - Lead score: {{ $json.points }}
-  
+
   Focus on their pain points and our solution benefits.
   Keep it under 150 words.
 
@@ -4881,15 +5059,15 @@ const template = `
 <body>
   <h2>Hi ${$json.firstname},</h2>
   ${$json.ai_content}
-  
+
   <!-- Dynamic CTA based on lead score -->
-  ${$json.points > 70 ? 
+  ${$json.points > 70 ?
     '<a href="{trackinglink=1}">Schedule a Demo</a>' :
     '<a href="{trackinglink=2}">Learn More</a>'
   }
-  
+
   <!-- Dynamic product recommendations -->
-  ${$json.industry === 'SaaS' ? 
+  ${$json.industry === 'SaaS' ?
     '{dynamiccontent="saas-features"}' :
     '{dynamiccontent="enterprise-features"}'
   }
@@ -4998,7 +5176,7 @@ const currentVisit = $json;
 const recentActivity = $('Get Recent Activity').json;
 
 // Calculate engagement velocity
-const last24h = recentActivity.filter(a => 
+const last24h = recentActivity.filter(a =>
   DateTime.fromISO(a.timestamp).diffNow('hours').hours > -24
 );
 
@@ -5009,7 +5187,7 @@ const engagementScore = {
   totalScore: 0
 };
 
-engagementScore.totalScore = 
+engagementScore.totalScore =
   (engagementScore.pageViews * 1) +
   (engagementScore.emailOpens * 3) +
   (engagementScore.downloads * 10);
@@ -5064,9 +5242,9 @@ const rateA = variantA.unique_clicks / variantA.sent;
 const rateB = variantB.unique_clicks / variantB.sent;
 
 // Simple statistical significance (z-test)
-const pooledRate = (variantA.unique_clicks + variantB.unique_clicks) / 
+const pooledRate = (variantA.unique_clicks + variantB.unique_clicks) /
                    (variantA.sent + variantB.sent);
-const se = Math.sqrt(pooledRate * (1 - pooledRate) * 
+const se = Math.sqrt(pooledRate * (1 - pooledRate) *
            (1/variantA.sent + 1/variantB.sent));
 const zScore = Math.abs(rateA - rateB) / se;
 const isSignificant = zScore > 1.96; // 95% confidence
@@ -5090,16 +5268,16 @@ Condition: {{ $json.isSignificant === true }}
   Operation: Update Email
   Email ID: {{ $json.winner === 'A' ? 45 : 46 }}
   A/B Winner: true
-  
+
   // 6. Create new test with winner as control
   Operation: Clone Email
   Source: {{ $json.winner === 'A' ? 45 : 46 }}
-  
+
   // 7. OpenAI: Generate new variant
   Prompt: |
     Current winner subject: {{ $json.winnerSubject }}
     Click rate: {{ $json.winner === 'A' ? $json.rateA : $json.rateB }}
-    
+
     Generate a new subject line variant to test.
 
 // 8. Document results
@@ -5175,7 +5353,7 @@ docker exec mautic_web php bin/console cache:clear
 // Always sanitize webhook inputs
 const sanitized = {
   email: $json.email?.toLowerCase().trim(),
-  firstname: $json.firstname?.replace(/[^a-zA-Z\s]/g, ''),
+  firstname: $json.firstname?.replace(/[^a-zA-Z\s]/g, ""),
   // Validate before processing
 };
 
@@ -5199,6 +5377,7 @@ const apiKey = $env.MAUTIC_API_KEY;
 ### Common Issues
 
 **Webhook not receiving data:**
+
 ```bash
 # Check Mautic webhook configuration
 docker exec mautic_web php bin/console mautic:webhooks:process
@@ -5208,6 +5387,7 @@ curl -X POST https://n8n.yourdomain.com/webhook/test
 ```
 
 **API authentication failures:**
+
 ```bash
 # Regenerate API credentials
 docker exec mautic_web php bin/console mautic:oauth:client:create \
@@ -5216,6 +5396,7 @@ docker exec mautic_web php bin/console mautic:oauth:client:create \
 ```
 
 **Performance issues:**
+
 ```bash
 # Check queue status
 docker exec mautic_worker php bin/console mautic:queue:process
@@ -5231,7 +5412,7 @@ docker exec mautic_redis redis-cli INFO stats
 ```sql
 -- Add custom fields via SQL (advanced)
 INSERT INTO mautic_lead_fields (alias, label, type, field_group)
-VALUES 
+VALUES
   ('lead_score_ml', 'ML Lead Score', 'number', 'professional'),
   ('predictive_ltv', 'Predicted LTV', 'number', 'professional'),
   ('engagement_tier', 'Engagement Tier', 'select', 'behavior');
@@ -5241,18 +5422,18 @@ VALUES
 
 ```javascript
 // Verify webhook signature in n8n
-const crypto = require('crypto');
-const signature = $headers['mautic-signature'];
+const crypto = require("crypto");
+const signature = $headers["mautic-signature"];
 const payload = JSON.stringify($json);
 const secret = $env.MAUTIC_WEBHOOK_SECRET;
 
 const expectedSig = crypto
-  .createHmac('sha256', secret)
+  .createHmac("sha256", secret)
   .update(payload)
-  .digest('hex');
+  .digest("hex");
 
 if (signature !== expectedSig) {
-  throw new Error('Invalid webhook signature');
+  throw new Error("Invalid webhook signature");
 }
 ```
 
@@ -5270,10 +5451,12 @@ Perplexica provides AI-powered search capabilities that can be integrated into n
 #### Basic Search Query (n8n HTTP Request Node)
 
 **Configuration:**
+
 - **Method:** POST
 - **URL:** `http://perplexica:3000/api/search`
 - **Headers:** `Content-Type: application/json`
 - **Body:**
+
 ```json
 {
   "query": "{{ $json.searchQuery }}",
@@ -5284,14 +5467,14 @@ Perplexica provides AI-powered search capabilities that can be integrated into n
 
 #### Available Focus Modes
 
-| Mode | Use Case | Example Query |
-|------|----------|---------------|
-| `webSearch` | General web search | "Latest AI developments 2025" |
-| `academicSearch` | Scientific papers & research | "CRISPR gene editing studies" |
-| `youtubeSearch` | Video content discovery | "How to build a RAG system" |
-| `redditSearch` | Community discussions | "Best practices for n8n workflows" |
-| `writingAssistant` | Content creation help | "Write an introduction about quantum computing" |
-| `wolframAlphaSearch` | Math & computational queries | "Calculate the derivative of x^3 + 2x" |
+| Mode                 | Use Case                     | Example Query                                   |
+| -------------------- | ---------------------------- | ----------------------------------------------- |
+| `webSearch`          | General web search           | "Latest AI developments 2025"                   |
+| `academicSearch`     | Scientific papers & research | "CRISPR gene editing studies"                   |
+| `youtubeSearch`      | Video content discovery      | "How to build a RAG system"                     |
+| `redditSearch`       | Community discussions        | "Best practices for n8n workflows"              |
+| `writingAssistant`   | Content creation help        | "Write an introduction about quantum computing" |
+| `wolframAlphaSearch` | Math & computational queries | "Calculate the derivative of x^3 + 2x"          |
 
 #### Example: Deep Research Workflow
 
@@ -5309,43 +5492,45 @@ Build an automated research assistant that performs multi-perspective analysis:
 ```
 
 **Extract Topics Code Node:**
+
 ```javascript
 const response = $input.first().json;
 const topics = [];
 
 // Extract key phrases from answer
 const headings = response.message.match(/### (.+)/g) || [];
-headings.forEach(h => topics.push(h.replace('### ', '')));
+headings.forEach((h) => topics.push(h.replace("### ", "")));
 
 // Create follow-up queries
-return topics.map(topic => ({
+return topics.map((topic) => ({
   json: {
     query: `${topic} detailed analysis`,
-    focusMode: "academicSearch"
-  }
+    focusMode: "academicSearch",
+  },
 }));
 ```
 
 **Aggregate Research Code Node:**
+
 ```javascript
 const allResults = $input.all();
 const research = {
   timestamp: new Date().toISOString(),
   findings: {},
-  sources: []
+  sources: [],
 };
 
 // Combine all research
-allResults.forEach(item => {
+allResults.forEach((item) => {
   const data = item.json;
   research.findings[data.focusMode] = data.message;
   research.sources.push(...(data.sources || []));
 });
 
 // Remove duplicate sources
-research.sources = [...new Map(
-  research.sources.map(s => [s.url, s])
-).values()];
+research.sources = [
+  ...new Map(research.sources.map((s) => [s.url, s])).values(),
+];
 
 return { json: research };
 ```
@@ -5379,24 +5564,24 @@ for (const competitor of competitors) {
     url: "http://perplexica:3000/api/search",
     body: {
       query: `${competitor} latest news announcements`,
-      focusMode: "webSearch"
-    }
+      focusMode: "webSearch",
+    },
   });
-  
+
   // Search for community sentiment
   const sentiment = await $http.request({
     url: "http://perplexica:3000/api/search",
     body: {
       query: `${competitor} reviews opinions`,
-      focusMode: "redditSearch"
-    }
+      focusMode: "redditSearch",
+    },
   });
-  
+
   results.push({
     competitor,
     news: news.message,
     sentiment: sentiment.message,
-    sources: [...news.sources, ...sentiment.sources]
+    sources: [...news.sources, ...sentiment.sources],
   });
 }
 
@@ -5420,6 +5605,7 @@ The Speech Stack provides OpenAI-compatible APIs for speech-to-text and text-to-
 #### Speech-to-Text with Whisper (n8n HTTP Request Node)
 
 **Configuration:**
+
 - **Method:** POST
 - **URL:** `http://faster-whisper:8000/v1/audio/transcriptions`
 - **Send Body:** Form Data Multipart
@@ -5440,6 +5626,7 @@ The Speech Stack provides OpenAI-compatible APIs for speech-to-text and text-to-
 #### Text-to-Speech with OpenedAI-Speech (n8n HTTP Request Node)
 
 **Configuration:**
+
 - **Method:** POST
 - **URL:** `http://openedai-speech:8000/v1/audio/speech`
 - **Send Headers:** ON
@@ -5459,6 +5646,7 @@ The Speech Stack provides OpenAI-compatible APIs for speech-to-text and text-to-
 **Available English voices:** alloy, echo, fable, onyx, nova, shimmer
 
 #### Example: Voice-to-Voice Workflow
+
 ```
 1. Telegram Trigger → Receive voice message
 2. Get File → Download voice file from Telegram
@@ -5473,12 +5661,14 @@ The Speech Stack provides OpenAI-compatible APIs for speech-to-text and text-to-
 To add German voices (or other languages) to the Text-to-Speech service:
 
 1. **Locate the configuration file:**
+
    ```bash
    cd ~/ai-launchkit
    nano openedai-config/voice_to_speaker.yaml
    ```
 
 2. **Add German voices to the `tts-1` section:**
+
    ```yaml
    # Add these lines under the existing voices
    thorsten:
@@ -5493,20 +5683,25 @@ To add German voices (or other languages) to the Text-to-Speech service:
    ```
 
 3. **Restart the TTS service:**
+
    ```bash
    docker compose -p localai restart openedai-speech
    ```
 
 4. **Use German voices in n8n:**
    {
-     "model": "tts-1",
-URL: http://lightrag:9621/api/query
-     "input": "Hallo, dies ist ein Test der deutschen Sprachausgabe.",
-     "voice": "thorsten"
+   "model": "tts-1",
+   URL: http://lightrag:9621/api/query
+   "input": "Hallo, dies ist ein Test der deutschen Sprachausgabe.",
+   "voice": "thorsten"
    }
+
+   ```
+
    ```
 
 The voice models will be automatically downloaded on first use. Available German voices:
+
 - **thorsten**: High-quality male voice (medium quality)
 - **eva**: Female voice (extra low quality, very fast)
 - **kerstin**: Female voice (low quality, fast)
@@ -5518,6 +5713,7 @@ You can find more voices at [Piper Voice Samples](https://rhasspy.github.io/pipe
 Scriberr provides AI-powered audio transcription with speaker diarization (identifying who said what), perfect for meetings, interviews, and podcasts.
 
 #### Features
+
 - **WhisperX-powered transcription** - High accuracy with timestamp precision
 - **Speaker diarization** - Automatically identifies and labels different speakers
 - **AI summaries** - Generate summaries using OpenAI/Anthropic
@@ -5527,7 +5723,8 @@ Scriberr provides AI-powered audio transcription with speaker diarization (ident
 #### n8n Integration - Audio Transcription Workflow
 
 **Upload and Transcribe:**
-```javascript
+
+````javascript
 // HTTP Request Node Configuration
 Method: POST
 URL: http://scriberr:8080/api/upload
@@ -5609,20 +5806,22 @@ Body (JSON):
 }
 Response Format: File
 Put Output in Field: data
-```
+````
 
 ### Voice Cloning Setup
 
 1. **Prepare voice sample:**
+
    ```bash
    # Create voice directory
    mkdir -p ~/ai-launchkit/shared/tts/voices
-   
+
    # Copy your voice sample (10-30 seconds, WAV/MP3)
    cp your-voice.wav ~/ai-launchkit/shared/tts/voices/
    ```
 
 2. **Clone voice via API:**
+
    ```javascript
    // HTTP Request Node for voice cloning
    Method: POST
@@ -5668,11 +5867,13 @@ Arabic, Chinese, Danish, Dutch, English, Finnish, French, German, Greek, Hebrew,
 ## 📚 Resources
 
 ### TTS Chatterbox
+
 - GitHub: https://github.com/travisvn/chatterbox-tts-api
 - Model Info: https://www.resemble.ai/chatterbox/
 - API Docs: http://chatterbox:4123/docs
 
 ### n8n Templates
+
 - Voice Assistant: https://n8n.io/workflows/2092
 
 ### 🔍 OCR Bundle Integration
@@ -5686,6 +5887,7 @@ The OCR Bundle provides two complementary OCR engines for different use cases: T
 **Languages:** 90+ languages supported
 
 **n8n HTTP Request Node Configuration:**
+
 - **Method:** POST
 - **URL:** `http://tesseract-ocr:8884/tesseract`
 - **Send Body:** Form Data Multipart
@@ -5700,6 +5902,7 @@ The OCR Bundle provides two complementary OCR engines for different use cases: T
      - Value: `{"languages":["eng","deu"],"psm":3}`
 
 **PSM (Page Segmentation Modes):**
+
 - `3` = Fully automatic page segmentation (default)
 - `6` = Uniform block of text
 - `11` = Sparse text, find as much as possible
@@ -5712,12 +5915,14 @@ The OCR Bundle provides two complementary OCR engines for different use cases: T
 **Languages:** 80+ languages supported
 
 **n8n HTTP Request Node Configuration:**
+
 - **Method:** POST
 - **URL:** `http://easyocr:2000/ocr`
 - **Send Headers:** ON
   - `Content-Type`: `application/json`
 - **Send Body:** JSON
-```json
+
+````json
   {
     "secret_key": "{{ $env.EASYOCR_SECRET_KEY }}",
     "image_url": "{{ $json.imageUrl }}",
@@ -5741,7 +5946,7 @@ let ocrEngine = 'tesseract'; // default
 if (fileType.includes('jpeg') || fileType.includes('png')) {
   // Photos typically need EasyOCR
   ocrEngine = 'easyocr';
-} else if (fileName.toLowerCase().includes('receipt') || 
+} else if (fileName.toLowerCase().includes('receipt') ||
            fileName.toLowerCase().includes('invoice')) {
   // Receipts/invoices with numbers work better with EasyOCR
   ocrEngine = 'easyocr';
@@ -5753,7 +5958,7 @@ if (fileType.includes('jpeg') || fileType.includes('png')) {
 return {
   json: {
     ocrEngine,
-    endpoint: ocrEngine === 'easyocr' 
+    endpoint: ocrEngine === 'easyocr'
       ? 'http://easyocr:2000/ocr'
       : 'http://tesseract-ocr:8884/tesseract',
     method: ocrEngine
@@ -5878,7 +6083,7 @@ Method: POST
 URL: http://stirling-pdf:8080/api/v1/convert/pdf-to-text
 Headers:
   Content-Type: multipart/form-data
-Body: 
+Body:
   - Parameter: file (binary)
   - Parameter: outputFormat: "txt"
 
@@ -5893,7 +6098,7 @@ const invoice = {
 return invoice;
 
 // 5. Invoice Ninja/Odoo: Create vendor bill
-```
+````
 
 #### Example: Document Watermarking Workflow
 
@@ -6012,6 +6217,7 @@ Body:
 #### Available Operations
 
 **Document Manipulation:**
+
 - Merge/Split PDFs
 - Rotate pages
 - Reorder pages
@@ -6021,6 +6227,7 @@ Body:
 - Crop PDFs
 
 **Conversion:**
+
 - PDF to Text (with OCR)
 - PDF to Word/Excel/PowerPoint
 - Images to PDF
@@ -6029,6 +6236,7 @@ Body:
 - PDF to images (PNG/JPEG)
 
 **Security:**
+
 - Add/remove passwords
 - Add watermarks
 - Digital signatures
@@ -6037,12 +6245,14 @@ Body:
 - Certificate signing
 
 **Forms & Data:**
+
 - Extract form data
 - Fill forms programmatically
 - Flatten forms
 - Add form fields
 
 **Optimization:**
+
 - Compress PDFs
 - Optimize for web
 - Reduce file size
@@ -6075,7 +6285,7 @@ Body: {
       "parameters": {"angle": 90}
     },
     {
-      "operation": "compress", 
+      "operation": "compress",
       "parameters": {"quality": 85}
     },
     {
@@ -6096,8 +6306,8 @@ For high-volume processing:
 stirling-pdf:
   environment:
     - DOCKER_ENABLE_SECURITY=true
-    - SYSTEM_MAXFILESIZE=512  # Increase from 256MB
-    - SYSTEM_CONNECTIONTIMEOUTMINUTES=10  # For large operations
+    - SYSTEM_MAXFILESIZE=512 # Increase from 256MB
+    - SYSTEM_CONNECTIONTIMEOUTMINUTES=10 # For large operations
 ```
 
 #### Common Use Cases
@@ -6112,6 +6322,7 @@ stirling-pdf:
 #### Troubleshooting
 
 **PDF Processing Fails:**
+
 ```bash
 # Check Stirling-PDF logs
 docker logs stirling-pdf --tail 100
@@ -6124,6 +6335,7 @@ curl http://localhost:8080/api/v1/info/status
 ```
 
 **OCR Not Working:**
+
 ```bash
 # Check if Tesseract is installed
 docker exec stirling-pdf tesseract --version
@@ -6134,6 +6346,7 @@ docker exec stirling-pdf apt-get install tesseract-ocr-deu  # German
 ```
 
 **Memory Issues with Large PDFs:**
+
 ```bash
 # Increase Docker memory limit
 docker update --memory="2g" stirling-pdf
@@ -6156,6 +6369,7 @@ LibreTranslate provides a self-hosted translation API with 50+ languages, perfec
 #### Basic Translation (n8n HTTP Request Node)
 
 **Configuration:**
+
 - **Method:** POST
 - **URL:** `http://libretranslate:5000/translate`
 - **Authentication:** None (internal access)
@@ -6163,13 +6377,16 @@ LibreTranslate provides a self-hosted translation API with 50+ languages, perfec
   - `Content-Type`: `application/json`
   ```json
   {
-6. HTTP Request → Translate back to original language
-    "q": "{{ $json.text }}",
-    "source": "auto",
-    "target": "de",
-    "format": "text"
-  }
   ```
+
+6. HTTP Request → Translate back to original language
+   "q": "{{ $json.text }}",
+   "source": "auto",
+   "target": "de",
+   "format": "text"
+   }
+
+````
 
 #### Detect Language
 
@@ -6177,19 +6394,21 @@ LibreTranslate provides a self-hosted translation API with 50+ languages, perfec
 - **Method:** POST
 - **URL:** `http://libretranslate:5000/detect`
 - **Send Body:** JSON
-  ```json
-  {
-    "q": "{{ $json.text }}"
-  }
-  ```
+```json
+{
+  "q": "{{ $json.text }}"
+}
+````
 
 #### Get Available Languages
 
 **Configuration:**
+
 - **Method:** GET
 - **URL:** `http://libretranslate:5000/languages`
 
 #### Example: Multi-Language Support Workflow
+
 ```
 1. Webhook Trigger → Receive text from user
 2. HTTP Request → Detect language
@@ -6215,15 +6434,16 @@ LibreTranslate provides a self-hosted translation API with 50+ languages, perfec
 
 #### Common Language Codes
 
-| Code | Language | Code | Language | Code | Language |
-|------|----------|------|----------|------|----------|
-| `de` | German | `fr` | French | `zh` | Chinese |
-| `en` | English | `it` | Italian | `ja` | Japanese |
-| `es` | Spanish | `pt` | Portuguese | `ar` | Arabic |
-| `ru` | Russian | `nl` | Dutch | `ko` | Korean |
-| `pl` | Polish | `tr` | Turkish | `hi` | Hindi |
+| Code | Language | Code | Language   | Code | Language |
+| ---- | -------- | ---- | ---------- | ---- | -------- |
+| `de` | German   | `fr` | French     | `zh` | Chinese  |
+| `en` | English  | `it` | Italian    | `ja` | Japanese |
+| `es` | Spanish  | `pt` | Portuguese | `ar` | Arabic   |
+| `ru` | Russian  | `nl` | Dutch      | `ko` | Korean   |
+| `pl` | Polish   | `tr` | Turkish    | `hi` | Hindi    |
 
 **Tips:**
+
 - Use `"source": "auto"` for automatic language detection
 - Set `"format": "html"` to preserve HTML formatting
 - Documents (docx, pdf, txt) can be translated via file upload
@@ -6237,6 +6457,7 @@ LightRAG provides graph-based RAG with automatic entity and relationship extract
 #### Basic Document Processing (n8n HTTP Request Node)
 
 **Insert Document:**
+
 ```javascript
 // HTTP Request Node Configuration
 Method: POST
@@ -6256,6 +6477,7 @@ Body: {
 #### Query Knowledge Graph
 
 **Configuration for different query modes:**
+
 ```javascript
 // Local Query - Specific entity information
 Method: POST
@@ -6285,6 +6507,7 @@ Body: {
 ```
 
 #### Example: Building a Knowledge Graph from Documents
+
 ```
 1. Trigger (Webhook/Schedule) → Start workflow
 2. Google Drive → Get new PDF documents
@@ -6299,6 +6522,7 @@ Body: {
 ```
 
 #### Query Modes Explained
+
 - **`local`**: Retrieves specific information about entities and their direct relationships
 - **`global`**: Provides high-level summaries and themes across the entire knowledge base
 - **`hybrid`**: Combines both local and global retrieval for comprehensive answers
@@ -6321,6 +6545,7 @@ This enables chatting with your knowledge graph directly through the Open WebUI 
 LightRAG defaults to using local Ollama models, but you can switch to OpenAI for better performance with large documents:
 
 ##### Why Switch to OpenAI?
+
 - **Performance:** OpenAI models are 10-100x faster than CPU-based Ollama
 - **Large Documents:** Can handle PDFs with 50+ pages without timeouts
 - **Better Quality:** More accurate entity and relationship extraction
@@ -6329,6 +6554,7 @@ LightRAG defaults to using local Ollama models, but you can switch to OpenAI for
 ##### Configuration Steps:
 
 1. **Add OpenAI API Key to .env:**
+
 ```bash
 nano .env
 # Add or update:
@@ -6336,22 +6562,24 @@ OPENAI_API_KEY=sk-proj-YOUR-API-KEY-HERE
 ```
 
 2. **Update docker-compose.yml:**
+
 ```yaml
 lightrag:
   environment:
     - OPENAI_API_KEY=${OPENAI_API_KEY}
-    - LLM_BINDING=openai                           # Changed from ollama
-    - LLM_BINDING_HOST=https://api.openai.com/v1   # OpenAI endpoint
-    - LLM_MODEL=gpt-4o-mini                        # Cost-efficient model
-    - EMBEDDING_BINDING=openai                     # Changed from ollama
+    - LLM_BINDING=openai # Changed from ollama
+    - LLM_BINDING_HOST=https://api.openai.com/v1 # OpenAI endpoint
+    - LLM_MODEL=gpt-4o-mini # Cost-efficient model
+    - EMBEDDING_BINDING=openai # Changed from ollama
     - EMBEDDING_BINDING_HOST=https://api.openai.com/v1
-    - EMBEDDING_MODEL=text-embedding-3-small       # OpenAI embeddings
-    - EMBEDDING_DIM=1536                           # OpenAI dimension (not 768!)
-    - TIMEOUT=600                                   # 10 minute timeout
+    - EMBEDDING_MODEL=text-embedding-3-small # OpenAI embeddings
+    - EMBEDDING_DIM=1536 # OpenAI dimension (not 768!)
+    - TIMEOUT=600 # 10 minute timeout
     # ... other existing variables ...
 ```
 
 3. **Clear Existing Data (Important!):**
+
 ```bash
 # Stop LightRAG
 docker compose -p localai down lightrag
@@ -6364,12 +6592,15 @@ docker compose -p localai up -d lightrag
 ```
 
 ##### Available OpenAI Models:
+
 - **Budget:** `gpt-4o-mini` (~$0.15/1M input, $0.60/1M output)
 - **Balanced:** `gpt-4o` (~$2.50/1M input, $10/1M output)
 - **Embeddings:** `text-embedding-3-small` (1536 dimensions)
 
 ##### Cost Example:
+
 Processing a 50-page PDF (~50,000 tokens):
+
 - **gpt-4o-mini:** ~$0.02 total
 - **gpt-4o:** ~$0.20 total
 - **Ollama (llama3.2):** Free but may timeout
@@ -6377,20 +6608,24 @@ Processing a 50-page PDF (~50,000 tokens):
 ##### Troubleshooting OpenAI Configuration:
 
 If you get "model not found" errors:
+
 - Ensure `LLM_BINDING` and `EMBEDDING_BINDING` are set to `openai`
 - Model names should NOT have `openai/` prefix
 - Check API key is valid: https://platform.openai.com/api-keys
 
 If you get dimension mismatch errors:
+
 - You must delete the volume when switching between Ollama (768 dim) and OpenAI (1536 dim)
 - This will delete all existing knowledge graphs - export important data first!
 
 ### 📁 File System Access
+
 - **Shared folder**: `./shared` → `/data/shared` in containers
 - **Media folder**: `./media` → `/data/media` in containers
 - **Temp folder**: `./temp` → `/data/temp` for processing
 
 ### 🔒 Security Features
+
 - ✅ **Automatic SSL/TLS** via Let's Encrypt
 - ✅ **Firewall configuration** with UFW
 - ✅ **Brute-force protection** via Fail2ban
@@ -6400,16 +6635,19 @@ If you get dimension mismatch errors:
 ### 🔄 Maintenance
 
 **Update all services:**
+
 ```bash
 sudo bash ./scripts/update.sh
 ```
 
 **Clean up Docker:**
+
 ```bash
 sudo bash ./scripts/docker_cleanup.sh
 ```
 
 **Check service status:**
+
 ```bash
 docker ps
 docker stats
@@ -6422,6 +6660,7 @@ docker stats
 ### 300+ Pre-built Workflows
 
 Optional import includes workflows for:
+
 - **AI & LLM**: RAG systems, chatbots, agents
 - **Automation**: Email, documents, data sync
 - **Social Media**: Auto-posting, content generation
@@ -6431,6 +6670,7 @@ Optional import includes workflows for:
 ### Enhanced Media Processing
 
 Complete media manipulation toolkit pre-installed:
+
 ```javascript
 // Video thumbnail generation
 ffmpeg -i video.mp4 -ss 00:00:05 -vframes 1 thumb.jpg
@@ -6443,6 +6683,7 @@ gs -sDEVICE=txtwrite -o output.txt input.pdf
 ```
 
 ### Production-Ready Features
+
 - **Scalable**: Queue-based architecture with Redis
 - **Parallel Processing**: Multiple n8n workers
 - **Monitoring**: Built-in Grafana dashboards
@@ -6454,11 +6695,13 @@ gs -sDEVICE=txtwrite -o output.txt input.pdf
 ## 🤝 Support
 
 ### Community
-- **Discord**: [Join our community](https://discord.gg/ai-launchkit) *(coming soon)*
+
+- **Discord**: [Join our community](https://discord.gg/ai-launchkit) _(coming soon)_
 - **Forum**: [oTTomator Think Tank](https://thinktank.ottomator.ai/c/local-ai/18)
 - **Issues**: [GitHub Issues](https://github.com/freddy-schuetz/ai-launchkit/issues)
 
 ### Resources
+
 - **Original n8n-installer**: [kossakovsky/n8n-installer](https://github.com/kossakovsky/n8n-installer)
 - **n8n Templates**: [Official Gallery](https://n8n.io/workflows/?categories=AI)
 - **Video Guide**: [AI Starter Kit Walkthrough](https://youtu.be/pOsO40HSbOo)
@@ -6473,6 +6716,7 @@ gs -sDEVICE=txtwrite -o output.txt input.pdf
 **Symptom:** Emails sent from services don't appear in Mailpit UI
 
 **Solutions:**
+
 ```bash
 # 1. Check if Mailpit is running
 docker ps | grep mailpit
@@ -6492,6 +6736,7 @@ grep "SMTP_\|MAIL_MODE" .env
 **Symptom:** Real emails not being delivered when Docker-Mailserver is configured
 
 **Solutions:**
+
 ```bash
 # 1. Check if Docker-Mailserver is running
 docker ps | grep mailserver
@@ -6518,6 +6763,7 @@ docker exec mailserver setup config dkim status
 **Symptom:** Error messages about SMTP connection failures
 
 **Solutions:**
+
 ```bash
 # 1. Check service configuration
 docker exec [service-name] printenv | grep SMTP
@@ -6540,6 +6786,7 @@ docker compose restart [service-name]
 **Symptom:** Send Email node fails with connection error
 
 **Solution for Mailpit (Development):**
+
 1. Create new SMTP credential in n8n:
    - Host: `mailpit` (not localhost!)
    - Port: `1025`
@@ -6549,7 +6796,9 @@ docker compose restart [service-name]
    - Sender Email: `noreply@yourdomain.com`
 
 **Solution for Docker-Mailserver (Production):**
+
 1. Create new SMTP credential in n8n:
+
    - Host: `mailserver`
    - Port: `587`
    - User: `noreply@yourdomain.com`
@@ -6567,6 +6816,7 @@ docker compose restart [service-name]
 **Symptom:** Cannot access SnappyMail webmail interface
 
 **Solutions:**
+
 ```bash
 # 1. Check if SnappyMail is running
 docker ps | grep snappymail
@@ -6588,12 +6838,15 @@ docker compose restart snappymail
 **Symptom:** Users cannot login to SnappyMail
 
 **Solutions:**
+
 1. Ensure domain is configured in admin panel:
+
    - Access `https://webmail.yourdomain.com/?admin`
    - Check if your domain is added
    - Verify IMAP/SMTP settings point to `mailserver`
 
 2. Verify user account exists in Docker-Mailserver:
+
    ```bash
    docker exec mailserver setup email list
    ```
@@ -6615,6 +6868,7 @@ docker compose restart snappymail
 **Most Common Cause:** UDP Port 10000 is blocked by VPS provider
 
 **Solutions:**
+
 ```bash
 # 1. Verify UDP port is open in firewall
 sudo ufw status | grep 10000
@@ -6642,6 +6896,7 @@ grep JVB_DOCKER_HOST_ADDRESS .env
 **Symptom:** One or more Jitsi containers keep restarting
 
 **Solutions:**
+
 ```bash
 # 1. Check all Jitsi components status
 docker ps -a | grep jitsi
@@ -6666,6 +6921,7 @@ docker compose restart jitsi-web jitsi-prosody jitsi-jicofo jitsi-jvb
 **Symptom:** Cal.com doesn't generate Jitsi meeting links
 
 **Solutions:**
+
 1. In Cal.com Settings → Apps → Jitsi Video
 2. Verify Server URL is `https://meet.yourdomain.com` (no trailing slash)
 3. Test by creating a manual booking
@@ -6676,6 +6932,7 @@ docker compose restart jitsi-web jitsi-prosody jitsi-jicofo jitsi-jvb
 **Symptom:** UDP test fails even with firewall configured correctly
 
 **Alternative Solutions:**
+
 1. **Use External Services:** Configure Cal.com with Zoom/Google Meet instead
 2. **Change VPS Provider:** Switch to Hetzner, DigitalOcean, or Contabo
 3. **Set up TURN Server:** Complex but can work around UDP blocks
@@ -6691,28 +6948,32 @@ docker compose restart jitsi-web jitsi-prosody jitsi-jicofo jitsi-jvb
 #### Quick Diagnosis
 
 1. **Check which containers are actually running:**
+
    ```bash
    docker ps -a
    ```
+
    Look for containers with status "Exited" or "Restarting"
 
 2. **Check system resources:**
+
    ```bash
    # RAM usage
    free -h
-   
+
    # CPU usage
    htop
-   
+
    # Disk space
    df -h
    ```
 
 3. **Check specific service logs:**
+
    ```bash
    # For the failing service (replace SERVICE_NAME)
    docker logs [SERVICE_NAME] --tail 100
-   
+
    # For Caddy (reverse proxy)
    docker logs caddy --tail 50
    ```
@@ -6722,10 +6983,12 @@ docker compose restart jitsi-web jitsi-prosody jitsi-jicofo jitsi-jvb
 ##### 1. Services Failed to Start (Most Common)
 
 **Symptoms:**
+
 - Service container shows "Exited" status
 - Caddy logs show "dial tcp: connection refused"
 
 **Solutions:**
+
 ```bash
 # Check why the service crashed
 docker logs [SERVICE_NAME] --tail 200
@@ -6740,11 +7003,13 @@ nano .env
 ##### 2. Insufficient RAM/Resources
 
 **Symptoms:**
+
 - High memory usage (>90% in `free -h`)
 - OOMKiller messages in logs
 - Multiple services crashing
 
 **Solutions:**
+
 ```bash
 # Add swap space (temporary fix)
 sudo fallocate -l 4G /swapfile
@@ -6761,11 +7026,13 @@ docker compose stop [SERVICE_NAME]
 ##### 3. Long Startup Times
 
 **Symptoms:**
+
 - Service works after 5-10 minutes
 - Container is running but not ready
 - Especially common with: Supabase, Dify, ComfyUI, Cal.com
 
 **Solution:**
+
 ```bash
 # Be patient - some services need time to initialize
 # Check progress with:
@@ -6778,10 +7045,12 @@ docker logs [SERVICE_NAME] --follow
 ##### 4. Port Conflicts
 
 **Symptoms:**
+
 - "bind: address already in use" in logs
 - Service can't start on its configured port
 
 **Solutions:**
+
 ```bash
 # Find what's using the port
 sudo lsof -i :PORT_NUMBER
@@ -6798,10 +7067,12 @@ docker compose up -d
 ##### 5. Network Issues
 
 **Symptoms:**
+
 - Services can't communicate internally
 - "no such host" errors in logs
 
 **Solutions:**
+
 ```bash
 # Recreate Docker network
 docker compose down
@@ -6815,10 +7086,12 @@ docker exec caddy ping [SERVICE_NAME]
 ##### 6. Database Connection Issues
 
 **Symptoms:**
+
 - Services depending on PostgreSQL fail
 - "connection refused" to postgres:5432
 
 **Solutions:**
+
 ```bash
 # Check if PostgreSQL is running
 docker ps | grep postgres
@@ -6833,6 +7106,7 @@ docker logs postgres --tail 100
 #### Service-Specific 502 Issues
 
 ##### n8n
+
 ```bash
 # Often caused by workflow import hanging
 # Solution: Skip workflows initially
@@ -6842,6 +7116,7 @@ docker compose up -d n8n
 ```
 
 ##### Supabase
+
 ```bash
 # Complex service with many components
 # Check each component:
@@ -6851,6 +7126,7 @@ docker logs supabase-kong --tail 50
 ```
 
 ##### Cal.com
+
 ```bash
 # Long build time on first start
 # Check build progress:
@@ -6859,6 +7135,7 @@ docker logs calcom --follow
 ```
 
 ##### bolt.diy
+
 ```bash
 # Requires proper hostname configuration
 # Verify in .env:
@@ -6869,27 +7146,31 @@ grep BOLT_HOSTNAME .env
 #### Prevention Tips
 
 1. **Start with minimal services:**
+
    - Begin with just n8n
    - Add services gradually
    - Monitor resources after each addition
 
 2. **Check requirements before installation:**
+
    - Each service adds ~200-500MB RAM usage
    - Some services (ComfyUI, Dify, Cal.com) need 1-2GB alone
 
 3. **Use monitoring:**
+
    ```bash
    # Watch resources in real-time
    docker stats
-   
+
    # Set up alerts with Grafana (if installed)
    ```
 
 4. **Regular maintenance:**
+
    ```bash
    # Clean up unused Docker resources
    docker system prune -a
-   
+
    # Check logs regularly
    docker compose logs --tail 100
    ```
@@ -6899,22 +7180,24 @@ grep BOLT_HOSTNAME .env
 If problems persist after trying these solutions:
 
 1. **Collect diagnostic information:**
+
    ```bash
    # Save all container statuses
    docker ps -a > docker_status.txt
-   
+
    # Save resource usage
    free -h > memory_status.txt
    df -h > disk_status.txt
-   
+
    # Save logs of failing service
    docker logs [SERVICE_NAME] > service_logs.txt 2>&1
-   
+
    # Save Caddy logs
    docker logs caddy > caddy_logs.txt 2>&1
    ```
 
 2. **Create a GitHub issue with:**
+
    - Your VPS specifications
    - Services selected during installation
    - The diagnostic files above
@@ -6931,10 +7214,12 @@ If problems persist after trying these solutions:
 <summary><b>🎙️ Speech Stack Issues</b></summary>
 
 #### Port Conflicts
+
 - **Common cause:** Port 8000 is used by Kong/Supabase
 - **Solution:** Speech Stack uses port 8001 for Whisper and 5001 for TTS to avoid conflicts
 
 #### TTS Not Working
+
 - **Symptom:** HTTP Request to TTS service fails
 - **Solution:**
   - Use the internal Docker network URL: `http://openedai-speech:8000/v1/audio/speech`
@@ -6942,6 +7227,7 @@ If problems persist after trying these solutions:
   - Ensure the Authorization header is set (even with dummy value like `Bearer sk-dummy`)
 
 #### German Speech Recognition Issues
+
 - **Symptom:** German audio transcribed as English gibberish
 - **Solution:**
   - Use the full model `Systran/faster-whisper-large-v3` instead of `distil` version
@@ -6949,6 +7235,7 @@ If problems persist after trying these solutions:
   - The full model will be downloaded on first use (~6GB)
 
 #### Voice Models Not Loading
+
 - **Symptom:** TTS voice not found error
 - **Solution:**
   - Voice models are downloaded automatically on first use
@@ -6962,6 +7249,7 @@ If problems persist after trying these solutions:
 <summary><b>🤖 AI Development Tools Issues</b></summary>
 
 #### bolt.diy Not Loading
+
 - **Symptom:** bolt.diy shows "blocked request" or doesn't load
 - **Cause:** This is typically a Vite configuration issue with reverse proxy
 - **Solution:** This fork includes a dynamic hostname configuration that automatically resolves this. If you still have issues:
@@ -6970,6 +7258,7 @@ If problems persist after trying these solutions:
   3. Clear browser cache and try again
 
 #### OpenHands Runtime Issues
+
 - **Symptom:** OpenHands shows "Failed to connect to runtime" after ~125 seconds
 - **Cause:** OpenHands requires Docker Desktop for `host.docker.internal` networking
 - **Solution:**
@@ -6978,6 +7267,7 @@ If problems persist after trying these solutions:
   - For full OpenHands functionality, use a system with Docker Desktop installed
 
 #### OpenUI Quality Issues (EXPERIMENTAL)
+
 - **Symptom:** OpenUI generates poor quality or unusable UI components
 - **Cause:** OpenUI's output quality varies significantly based on the LLM model used
 - **Solution:**
@@ -7015,18 +7305,21 @@ If problems persist after trying these solutions:
   1. **Brief use of a self-signed certificate:** When Caddy starts up for a new domain, it might briefly use a temporary certificate while requesting one from Let's Encrypt
   2. **Delay in applying the new certificate:** There might be a short delay before the newly obtained certificate is fully applied
 - **Solution:**
+
   - This is usually temporary and resolves within 1-24 hours
   - If the warning persists for more than 24 hours:
+
     ```bash
     # Check Caddy logs for certificate errors
     docker logs caddy | grep -i certificate
-    
+
     # Verify DNS settings
     nslookup *.yourdomain.com
-    
+
     # Force certificate renewal
     docker exec caddy caddy reload --config /etc/caddy/Caddyfile
     ```
+
   - Try clearing browser cache or using incognito/private window
 
 </details>
@@ -7035,10 +7328,12 @@ If problems persist after trying these solutions:
 <summary><b>🗄️ Supabase Issues</b></summary>
 
 #### Supabase Pooler Restarting
+
 - **Problem:** The `supabase-pooler` component keeps restarting
 - **Solution:** Follow the instructions in [this GitHub issue](https://github.com/supabase/supabase/issues/30210#issuecomment-2456955578)
 
 #### Supabase Analytics Startup Failure
+
 - **Problem:** The `supabase-analytics` component fails to start after changing Postgres password
 - **Solution:** You might need to reset its data
 - **⚠️ Warning:** This will delete your Supabase database data!
@@ -7046,6 +7341,7 @@ If problems persist after trying these solutions:
   - Technical step: Delete the `supabase/docker/volumes/db/data` folder
 
 #### Supabase Service Unavailable
+
 - **Problem:** Services like n8n cannot connect to Supabase
 - **Solution:**
   - Ensure your Postgres password doesn't contain special characters like "@"
@@ -7059,19 +7355,20 @@ If problems persist after trying these solutions:
 
 - **Symptom:** Permission denied errors when processing media files
 - **Solution:**
+
   ```bash
   # Check directory permissions
   ls -la ./media
   ls -la ./temp
-  
+
   # Check from within container
   docker exec n8n ls -la /data/media
   docker exec n8n ls -la /data/temp
-  
+
   # Fix permissions if needed
   sudo chown -R 1000:1000 ./media ./temp
   sudo chmod -R 775 ./media ./temp
-  
+
   # Restart n8n
   docker restart n8n
   ```
@@ -7082,28 +7379,33 @@ If problems persist after trying these solutions:
 <summary><b>🐳 Docker & Network Issues</b></summary>
 
 #### VPN Conflicts
+
 - **Problem:** Unable to download Docker images
 - **Solution:** Temporarily disable VPN during installation or updates
 
 #### Container Name Conflicts
+
 - **Symptom:** "Container name already in use" error
 - **Solution:**
+
   ```bash
   # Stop and remove conflicting container
   docker stop [container-name]
   docker rm [container-name]
-  
+
   # Or remove all stopped containers
   docker container prune
   ```
 
 #### Port Already in Use
+
 - **Symptom:** "Bind: address already in use" error
 - **Solution:**
+
   ```bash
   # Find what's using the port
   sudo lsof -i :PORT_NUMBER
-  
+
   # Kill the process or change port in .env file
   ```
 
@@ -7113,6 +7415,7 @@ If problems persist after trying these solutions:
 <summary><b>📊 Performance Issues</b></summary>
 
 #### High Memory Usage
+
 - **Check current usage:**
   ```bash
   docker stats --no-stream
@@ -7130,6 +7433,7 @@ If problems persist after trying these solutions:
     ```
 
 #### Slow Performance
+
 - **Check disk I/O:**
   ```bash
   iostat -x 1
@@ -7146,6 +7450,7 @@ If problems persist after trying these solutions:
 <summary><b>⚠️ General Issues</b></summary>
 
 #### Server Requirements
+
 - Ensure your server meets minimum requirements:
   - Ubuntu 24.04 LTS (64-bit)
   - Minimum 4GB RAM for basic setup
@@ -7153,6 +7458,7 @@ If problems persist after trying these solutions:
   - Properly configured DNS with wildcard A record
 
 #### Checking Service Health
+
 ```bash
 # View all running containers
 docker ps
@@ -7168,7 +7474,9 @@ docker compose down && docker compose up -d
 ```
 
 #### Getting Help
+
 If problems persist:
+
 1. Check existing [GitHub Issues](https://github.com/freddy-schuetz/ai-launchkit/issues)
 2. Search the [Community Forum](https://thinktank.ottomator.ai/c/local-ai/18)
 3. Create a new issue with:
@@ -7195,9 +7503,9 @@ graph TD
     A --> SM[SnappyMail - Webmail]
     A --> JM[Jitsi Meet - Video]
     A --> VW[Vaultwarden - Passwords]
-    
+
     CF[Cloudflare Tunnel] -.-> A
-    
+
     B --> G[PostgreSQL]
     B --> H[Redis Queue]
     B --> I[Shared Storage]
@@ -7209,29 +7517,29 @@ graph TD
     B --> LR[LightRAG - Graph RAG]
     B --> SMTP[Mail System]
     B --> CAL2[Cal.com API]
-    
+
     CAL --> G
     CAL --> H
     CAL --> SMTP
     CAL --> JM[Jitsi Integration]
-    
+
     JM --> JP[Jitsi Prosody - XMPP]
     JM --> JF[Jitsi Jicofo - Focus]
     JM --> JV[Jitsi JVB - WebRTC]
     JV -.-> |UDP 10000| INET[Internet]
-    
+
     SMTP --> MP2[Mailpit SMTP]
     SMTP -.-> MS[Docker-Mailserver]
-    
+
     SM --> MS[Docker-Mailserver IMAP/SMTP]
-    
+
     VW --> I[Shared Storage]
     VW --> SMTP[Mail System]
-    
+
     C --> J[Ollama - Local LLMs]
     D --> J
     E --> J
-    
+
     K[Grafana] --> L[Prometheus]
     L --> B
     L --> G
@@ -7245,6 +7553,7 @@ graph TD
 Created and maintained by [Friedemann Schuetz](https://www.linkedin.com/in/friedemann-schuetz)
 
 Based on:
+
 - [n8n-installer](https://github.com/kossakovsky/n8n-installer) by kossakovsky
 - [self-hosted-ai-starter-kit](https://github.com/n8n-io/self-hosted-ai-starter-kit) by n8n team
 - [local-ai-packaged](https://github.com/coleam00/local-ai-packaged) by coleam00

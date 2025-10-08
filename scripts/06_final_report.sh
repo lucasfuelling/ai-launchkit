@@ -53,6 +53,14 @@ if is_profile_active "n8n"; then
   echo "Host: ${N8N_HOSTNAME:-<hostname_not_set>}"
 fi
 
+if is_profile_active "dentist"; then
+  echo
+  echo "================================= Dentist KV-APP ==========================="
+  echo
+  echo "Host: ${MYSERVICE_HOSTNAME:-<hostname_not_set>}"
+  echo "API (external via Caddy): https://${MYSERVICE_HOSTNAME:-<hostname_not_set>}"
+fi
+
 if is_profile_active "open-webui"; then
   echo
   echo "================================= WebUI ==============================="
