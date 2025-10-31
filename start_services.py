@@ -132,6 +132,9 @@ def prepare_supabase_env():
         elif line.startswith("DASHBOARD_PASSWORD="):
             dashboard_pass = root_env.get("DASHBOARD_PASSWORD", "")
             new_lines.append(f"DASHBOARD_PASSWORD={dashboard_pass}\n")
+        elif line.startswith("POOLER_TENANT_ID="):
+            tenant_id = root_env.get("POOLER_TENANT_ID", "")
+            new_lines.append(f"POOLER_TENANT_ID={tenant_id}\n")
         else:
             new_lines.append(line)
     
